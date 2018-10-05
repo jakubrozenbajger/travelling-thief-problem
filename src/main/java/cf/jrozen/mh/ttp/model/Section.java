@@ -13,4 +13,14 @@ public class Section {
         this.weight = weight;
         this.assignedNodeNumber = assignedNodeNumber;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "index=" + index +
+                ", profit=" + profit +
+                ", weight=" + weight +
+                ", assignedNodeNumber=" + assignedNodeNumber +
+                '}';
+    }
 }

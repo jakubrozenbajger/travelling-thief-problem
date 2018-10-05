@@ -7,6 +7,10 @@ public class Main {
     public static void main(String[] args) {
 //        var adsfasdf = "adsfasdf";
 
-        System.out.println(Loader.load("trivial_1"));
+        String javaTr = Loader.load("trivial_1").toString();
+        System.out.println(javaTr);
+        String scalatr = cf.jrozen.mh.ttp.utils.Loader.load("trivial_1").toString();
+        System.out.println(scalatr);
+        System.out.println(javaTr.equals(scalatr));
     }
 }

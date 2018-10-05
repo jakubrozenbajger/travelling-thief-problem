@@ -4,15 +4,17 @@ import java.util.List;
 
 public class Problem {
 
-    final String problemName;
-    final String knapsackDataType;
-    final int dimension;
-    final int numberOfItems;
-    final int capacityOfKnapsack;
-    final double minSpeed;
-    final double maxSpeed;
-    final double rentingRatio;
-    final String edgeWeightType;
+    public final String problemName;
+    public final String knapsackDataType;
+    public final int dimension;
+    public final int numberOfItems;
+    public final int capacityOfKnapsack;
+    public final double minSpeed;
+    public final double maxSpeed;
+    public final double rentingRatio;
+    public final String edgeWeightType;
+    public final List<Node> nodes;
+    public final List<Section> section;
 
     public Problem(String problemName,
                    String knapsackDataType,
@@ -35,6 +37,8 @@ public class Problem {
         this.maxSpeed = maxSpeed;
         this.rentingRatio = rentingRatio;
         this.edgeWeightType = edgeWeightType;
+        this.nodes = nodes;
+        this.section = section;
     }
 
     @Override
@@ -49,6 +53,8 @@ public class Problem {
                 ", maxSpeed=" + maxSpeed +
                 ", rentingRatio=" + rentingRatio +
                 ", edgeWeightType='" + edgeWeightType + '\'' +
+                ", nodes=" + nodes +
+                ", section=" + section +
                 '}';
     }
 }
