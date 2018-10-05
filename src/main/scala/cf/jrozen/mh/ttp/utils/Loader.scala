@@ -1,7 +1,6 @@
 package cf.jrozen.mh.ttp.utils
 
 import cf.jrozen.mh.ttp.model.{Node, Problem, Section}
-//import cf.jrozen.mh.ttp.util.Loader
 
 import scala.io.Source
 
@@ -9,7 +8,7 @@ object Loader {
 
   private val DIR_NAME = "fixtures/"
   private val FILE_EXT = ".ttp"
-  val REGEX = ":"
+  private val REGEX = ":"
 
   def load(filename: String): Problem = {
 
@@ -32,7 +31,7 @@ object Loader {
     val sections = scanner.map(sectionFromLine).toList
 
     import scala.collection.JavaConverters._
-    new Problem(problemName, knapsackDataType, dimension, numberOfItems, capacityOfKnapsack, minSpeed, maxSpeed, rentingRatio, edgeWeightType, nodes.asJava, sections.asJava)
+    Problem(problemName, knapsackDataType, dimension, numberOfItems, capacityOfKnapsack, minSpeed, maxSpeed, rentingRatio, edgeWeightType, nodes.asJava, sections.asJava)
   }
 
   val notContainsItemsSection: String => Boolean = str => !(str contains "ITEMS SECTION")
@@ -45,7 +44,7 @@ object Loader {
 
   private def nodeFromLine(line: String) = {
     val values = line.split("\t").map(_.trim.toDouble)
-    new Node(values(0).toInt, values(1), values(2))
+    Node(values(0).toInt, values(1), values(2))
   }
 
   private def sectionFromLine(line: String) = {
