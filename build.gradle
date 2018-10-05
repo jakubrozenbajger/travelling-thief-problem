@@ -16,12 +16,15 @@ idea {
 group 'cf.jrozen.mh'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
