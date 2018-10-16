@@ -4,8 +4,7 @@ import cf.jrozen.mh.ttp.model.Context.Matrix
 
 case class Context(
                     problem: Problem,
-                    mutationProbability: Double,
-                    crossoverProbability: Double
+                    parameters: Parameters
                   ) {
 
 

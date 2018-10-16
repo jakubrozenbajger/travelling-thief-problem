@@ -1,19 +1,13 @@
 plugins {
-    id 'java'
     id 'scala'
+    id 'java'
     id 'idea'
 }
 
-sourceSets {
-    main {
-        scala {
-            outputDir = file("$buildDir/classes/scala/main")
-        }
-        java {
-            outputDir = file("$buildDir/classes/java/main")
-        }
-    }
-}
+sourceSets.main.scala.srcDir "src/main/scala"
+sourceSets.test.scala.srcDir "src/test/scala"
+sourceSets.main.java.srcDirs = ["src/main/java"]
+sourceSets.test.java.srcDirs = ["src/main/java"]
 
 group 'cf.jrozen.mh'
 version '1.0-SNAPSHOT'

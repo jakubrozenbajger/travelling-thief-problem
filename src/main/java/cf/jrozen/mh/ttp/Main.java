@@ -2,6 +2,7 @@ package cf.jrozen.mh.ttp;
 
 
 import cf.jrozen.mh.ttp.model.Context;
+import cf.jrozen.mh.ttp.model.Parameters;
 import cf.jrozen.mh.ttp.model.Problem;
 import cf.jrozen.mh.ttp.utils.Loader;
 
@@ -13,7 +14,7 @@ public class Main {
         Problem trivial_1 = Loader.load("trivial_1");
         String scalatr = trivial_1.toString();
 
-        System.out.println(Arrays.deepToString(new Context(trivial_1, 1.2, 2.2).distance()));
+        System.out.println(Arrays.deepToString(new Context(trivial_1, new Parameters(5, 30, 4, 1.2, 2.2)).distance()));
 
 //        System.out.println(scalatr);
 
