@@ -11,6 +11,6 @@ case class Problem(
                     maxSpeed: Double,
                     rentingRatio: Double,
                     edgeWeightType: String,
-                    nodes: java.util.List[Node],
-                    section: java.util.List[Section]
+                    nodes: Array[Node],
+                    section: Array[Item]
                   )

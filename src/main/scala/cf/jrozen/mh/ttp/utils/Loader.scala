@@ -1,6 +1,6 @@
 package cf.jrozen.mh.ttp.utils
 
-import cf.jrozen.mh.ttp.model.{Node, Problem, Section}
+import cf.jrozen.mh.ttp.model.{Item, Node, Problem}
 
 import scala.io.Source
 
@@ -26,12 +26,10 @@ object Loader {
 
     scanner.next()
 
-    val nodes = scanner.takeWhile(notContainsItemsSection).map(nodeFromLine).toList
+    val nodes = scanner.takeWhile(notContainsItemsSection).map(nodeFromLine).toArray
+    val sections = scanner.map(itemFromLine).toArray
 
-    val sections = scanner.map(sectionFromLine).toList
-
-    import scala.collection.JavaConverters._
-    Problem(problemName, knapsackDataType, dimension, numberOfItems, capacityOfKnapsack, minSpeed, maxSpeed, rentingRatio, edgeWeightType, nodes.asJava, sections.asJava)
+    Problem(problemName, knapsackDataType, dimension, numberOfItems, capacityOfKnapsack, minSpeed, maxSpeed, rentingRatio, edgeWeightType, nodes, sections)
   }
 
   val notContainsItemsSection: String => Boolean = str => !(str contains "ITEMS SECTION")
@@ -47,9 +45,9 @@ object Loader {
     Node(values(0).toInt, values(1), values(2))
   }
 
-  private def sectionFromLine(line: String) = {
+  private def itemFromLine(line: String) = {
     val values = line.split("\t").map(_.trim.toDouble)
-    new Section(values(0).toInt, values(1), values(2), values(3).toInt)
+    Item(values(0).toInt, values(1), values(2), values(3).toInt)
   }
 
 }
