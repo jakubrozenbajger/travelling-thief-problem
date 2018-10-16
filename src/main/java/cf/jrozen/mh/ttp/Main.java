@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
 
         final Problem trivial_1 = Loader.load("trivial_1");
-        final Parameters params = new Parameters(300, 30, 4, 1.2, 2.2);
+        final Parameters params = new Parameters(300, 30, 4, 0.2, 0.2);
         final Context context = new Context(trivial_1, params);
 
 

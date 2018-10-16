@@ -4,18 +4,15 @@ plugins {
     id 'idea'
 }
 
-sourceSets.main.scala.srcDir "src/main/scala"
-sourceSets.test.scala.srcDir "src/test/scala"
-sourceSets.main.java.srcDirs = ["src/main/java"]
-sourceSets.test.java.srcDirs = ["src/main/java"]
+sourceSets.main.scala.srcDir "src/main/java"
+sourceSets.main.java.srcDirs = []
 
 group 'cf.jrozen.mh'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = JavaVersion.VERSION_1_10
-targetCompatibility = JavaVersion.VERSION_1_10
-
-compileScala.targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+compileScala.targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()

@@ -32,6 +32,12 @@ case class Context(
 
   def nextCrossover: Boolean = Random.nextDouble() < parameters.crossoverProbability
 
+  def nextInt(int: Int): Int = Random.nextInt(int)
+
+  def calculate(e: Array[Int]): Double = {
+    (0 to e.length).map(i => distance(e(i))(e((i + 1) % e.length))).sum
+  }
+
 }
 
 object Context {

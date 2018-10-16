@@ -2,16 +2,16 @@ package cf.jrozen.mh.ttp.model;
 
 import com.google.common.primitives.Ints;
 import io.vavr.Lazy;
-import io.vavr.Tuple2;
+import io.vavr.collection.Array;
 import io.vavr.collection.List;
 
 public class Individual {
 
     private final Context context;
     private final int[] genes;
-    private final Lazy<Integer> value = Lazy.of(this::valueInit);
+    private final Lazy<Double> value = Lazy.of(this::valueInit);
 
-    public Integer value() {
+    public Double value() {
         return value.get();
     }
 
@@ -36,15 +36,17 @@ public class Individual {
                 int tmp = cloned[currInd];
                 cloned[currInd] = cloned[randomInd];
                 cloned[randomInd] = tmp;
-
             }
         }
         return new Individual(context, cloned);
     }
 
 
-    public static List<Individual> crossover(Tuple2<Individual, Individual> tuple) {
-        return List.of(tuple._1.crossoverOne(tuple._2), tuple._2.crossoverOne(tuple._1));
+    public Iterable<Individual> crossover(Individual that) {
+        if (context.nextCrossover())
+            return Array.of(this.crossoverOne(that), that.crossoverOne(this));
+        else
+            return Array.of(this, that);
     }
 
     private Individual crossoverOne(Individual that) {
@@ -65,8 +67,7 @@ public class Individual {
         return Ints.toArray(list.asJava());
     }
 
-
-    public int valueInit() {
-        return 0;
+    public double valueInit() {
+        return context.calculate(this.genes);
     }
 }

@@ -1,14 +1,16 @@
 package cf.jrozen.mh.ttp.model;
 
+import io.vavr.collection.Array;
+import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 
 public class Population {
 
     private final Context context;
-    private final List<Individual> population;
+    private final Array<Individual> population;
 
-    private Population(Context context, List<Individual> population) {
+    private Population(Context context, Array<Individual> population) {
         this.context = context;
         this.population = population;
     }
@@ -17,10 +19,10 @@ public class Population {
         return new Population(context, initRandomPopulation(context));
     }
 
-    private static List<Individual> initRandomPopulation(Context context) {
+    private static Array<Individual> initRandomPopulation(Context context) {
         return Stream.range(0, context.parameters().populationSize())
                 .map(i -> Individual.initRandom(context))
-                .toList();
+                .toArray();
     }
 
     public List<Population> evolve(int times) {
@@ -30,7 +32,8 @@ public class Population {
     }
 
     private Population evolve() {
-        return select().crossover(select())
+        return select()
+                .crossover()
                 .mutate();
     }
 
@@ -38,26 +41,26 @@ public class Population {
         return new Population(context, population.map(Individual::mutate));
     }
 
-    private Population crossover(Population that) {
-        return new Population(context, population.zip(that.population).flatMap(Individual::crossover));
+    private Population crossover() {
+        return new Population(context, crossover(this.population));
+    }
+
+    private Array<Individual> crossover(Array<Individual> population) {
+        return Iterator.range(0, population.size() / 2)
+                .flatMap(i -> population.get(i).crossover(population.get(population.size() - 1 - i)))
+                .toArray();
     }
 
     private Population select() {
-        return new Population(context, selectHalf());
+        return new Population(context,
+                Array.fill(population.size(),
+                        () -> pickTournament()
+                                .sortBy(Individual::value)
+                                .head()));
     }
 
-    private List<Individual> selectHalf() {
-        final int tournamentSize = context.parameters().tournamentSize();
-        final Stream<Individual> populationStream = population.toArray().toStream();
-        return Stream
-                .continually(() ->
-                        populationStream
-                                .shuffle()
-                                .take(tournamentSize)
-                                .sortBy(Individual::value)
-                                .head())
-                .take(population.size() / 2)
-                .toList();
+    private Array<Individual> pickTournament() {
+        return Array.fill(context.parameters().tournamentSize(), () -> population.get(context.nextInt(population.length())));
     }
 
     @Override
