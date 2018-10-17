@@ -1,5 +1,6 @@
 package cf.jrozen.mh.ttp.model;
 
+import cf.jrozen.mh.ttp.GreedyKnapsackSolver;
 import com.google.common.primitives.Ints;
 import io.vavr.Lazy;
 import io.vavr.collection.List;
@@ -7,7 +8,7 @@ import io.vavr.collection.List;
 public class Individual {
 
     private final Context context;
-    private final int[] genes;
+    private final int[] locations;
     private final Lazy<Double> value = Lazy.of(this::valueInit);
 
     Individual(Context context) {
@@ -18,18 +19,20 @@ public class Individual {
         return value.get();
     }
 
-    private Individual(Context context, final int[] genes) {
+    private Individual(Context context, final int[] locations) {
         this.context = context;
-        this.genes = genes;
+        this.locations = locations;
     }
 
     private double valueInit() {
-        return context.calculate(this.genes);
+//        return context.calculate(this.locations);
+        final Item[] items = GreedyKnapsackSolver.chooseItems(context, this.locations);
+        return context.calculate(this.locations, items);
     }
 
     Individual mutate() {
-        final int[] cloned = genes.clone();
-        for (int currInd = 0; currInd < genes.length; currInd++) {
+        final int[] cloned = locations.clone();
+        for (int currInd = 0; currInd < locations.length; currInd++) {
             if (context.nextMutate()) {
                 final int randomInd = context.nextIntInDims();
                 int tmp = cloned[currInd];
@@ -48,7 +51,7 @@ public class Individual {
     }
 
     private Individual crossoverOne(Individual that) {
-        final List<Integer> genes = List.ofAll(crossArrays(this.genes, that.genes));
+        final List<Integer> genes = List.ofAll(crossArrays(this.locations, that.locations));
         final List<Integer> fstNotUsed = List.range(0, context.problem().dimension()).removeAll(genes);
         return new Individual(context, toArray(genes.distinct().appendAll(fstNotUsed)));
     }

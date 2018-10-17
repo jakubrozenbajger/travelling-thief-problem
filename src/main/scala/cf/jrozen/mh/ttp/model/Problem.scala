@@ -12,5 +12,5 @@ case class Problem(
                     rentingRatio: Double,
                     edgeWeightType: String,
                     nodes: Array[Node],
-                    section: Array[Item]
+                    items: Array[Item]
                   )

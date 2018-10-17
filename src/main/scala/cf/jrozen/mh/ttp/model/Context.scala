@@ -1,7 +1,5 @@
 package cf.jrozen.mh.ttp.model
 
-import cf.jrozen.mh.ttp.model.Context.Matrix
-
 import scala.util.Random
 
 case class Context(
@@ -9,6 +7,7 @@ case class Context(
                     parameters: Parameters
                   ) {
 
+  type Matrix = Array[Array[Double]]
 
   lazy val distance: Matrix = {
     {
@@ -41,10 +40,18 @@ case class Context(
       }.sum
   }
 
+  def calculate(locationsOrder: Array[Int], items: Array[Item]): Double = {
+    val locationToItems = items.groupBy(_.assignedNodeNumber)
+
+    (locationsOrder :+ locationsOrder.head).sliding(2)
+      .map {
+        case Array(l: Int, r: Int) => locationToItems(l).map(i => i.profit).sum + distance(l)(r)
+      }.sum
+  }
+
 }
 
 object Context {
 
-  type Matrix = Array[Array[Double]]
 
 }
