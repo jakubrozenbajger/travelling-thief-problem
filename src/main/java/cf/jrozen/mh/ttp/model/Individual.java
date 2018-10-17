@@ -2,7 +2,6 @@ package cf.jrozen.mh.ttp.model;
 
 import com.google.common.primitives.Ints;
 import io.vavr.Lazy;
-import io.vavr.collection.Array;
 import io.vavr.collection.List;
 
 public class Individual {
@@ -11,24 +10,24 @@ public class Individual {
     private final int[] genes;
     private final Lazy<Double> value = Lazy.of(this::valueInit);
 
-    public Double value() {
+    Individual(Context context) {
+        this(context, randomGenes(context));
+    }
+
+    Double value() {
         return value.get();
     }
 
-    public Individual(Context context, final int[] genes) {
+    private Individual(Context context, final int[] genes) {
         this.context = context;
         this.genes = genes;
     }
 
-    public static Individual initRandom(Context context) {
-        return new Individual(context, randomGenes(context));
+    private double valueInit() {
+        return context.calculate(this.genes);
     }
 
-    private static int[] randomGenes(Context context) {
-        return toArray(List.range(0, context.problem().dimension()).shuffle());
-    }
-
-    public Individual mutate() {
+    Individual mutate() {
         final int[] cloned = genes.clone();
         for (int currInd = 0; currInd < genes.length; currInd++) {
             if (context.nextMutate()) {
@@ -41,18 +40,21 @@ public class Individual {
         return new Individual(context, cloned);
     }
 
-    // TODO: return one cross
-    public Iterable<Individual> crossover(Individual that) {
+    Individual crossover(Individual that) {
         if (context.nextCrossover())
-            return Array.of(this.crossoverOne(that), that.crossoverOne(this));
+            return this.crossoverOne(that);
         else
-            return Array.of(this, that);
+            return this;
     }
 
     private Individual crossoverOne(Individual that) {
         final List<Integer> genes = List.ofAll(crossArrays(this.genes, that.genes));
         final List<Integer> fstNotUsed = List.range(0, context.problem().dimension()).removeAll(genes);
         return new Individual(context, toArray(genes.distinct().appendAll(fstNotUsed)));
+    }
+
+    private static int[] randomGenes(Context context) {
+        return toArray(List.range(0, context.problem().dimension()).shuffle());
     }
 
     private int[] crossArrays(int[] thisGenes, int[] thatGenes) {
@@ -65,9 +67,5 @@ public class Individual {
 
     private static int[] toArray(List<Integer> list) {
         return Ints.toArray(list.asJava());
-    }
-
-    public double valueInit() {
-        return context.calculate(this.genes);
     }
 }

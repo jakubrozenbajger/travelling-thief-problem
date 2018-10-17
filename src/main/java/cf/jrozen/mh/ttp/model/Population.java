@@ -3,7 +3,6 @@ package cf.jrozen.mh.ttp.model;
 import com.google.common.math.Stats;
 import io.vavr.Lazy;
 import io.vavr.collection.Array;
-import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 
@@ -31,14 +30,12 @@ public class Population {
     }
 
     private static Array<Individual> initRandomPopulation(Context context) {
-        return Stream.range(0, context.parameters().populationSize())
-                .map(i -> Individual.initRandom(context))
-                .toArray();
+        return Array.fill(context.parameters().populationSize(), () -> new Individual(context));
     }
 
     public List<Population> evolve(int times) {
         return Stream.range(0, times)
-                .foldLeft(List.of(this), (acc, list) -> acc.prepend(acc.head().evolve()))
+                .foldLeft(List.of(this), (acc, i) -> acc.prepend(acc.head().evolve()))
                 .reverse();
     }
 
@@ -53,25 +50,22 @@ public class Population {
     }
 
     private Population crossover() {
-        return new Population(context, crossover(this.population));
-    }
-
-    private Array<Individual> crossover(Array<Individual> population) {
-        // this.pop.zip(this.pop.shuffle).map(indv::shuffle)
-        return Iterator.range(0, population.size() / 2)
-                .flatMap(i -> population.get(i).crossover(population.get(population.size() - 1 - i)))
-                .toArray();
+        return new Population(context,
+                this.population.zipWith(this.population.shuffle(),
+                        Individual::crossover
+                ).toArray()
+        );
     }
 
     private Population select() {
         return new Population(context,
                 Array.fill(population.size(),
-                        () -> pickTournament()
+                        () -> pickRandomTournament()
                                 .sortBy(Individual::value)
                                 .head()));
     }
 
-    private Array<Individual> pickTournament() {
+    private Array<Individual> pickRandomTournament() {
         return Array.fill(context.parameters().tournamentSize(), () -> population.get(context.nextInt(population.length())));
     }
 

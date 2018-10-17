@@ -18,11 +18,11 @@ public class Main {
     public static void main(String[] args) {
 
         final Problem trivial_1 = Loader.load("easy_0");
-        final Parameters params = new Parameters(300, 30, 7, 0.02, 0.09);
+        final Parameters params = new Parameters(300, 30, 7, 0.031, 0.19);
         final Context context = new Context(trivial_1, params);
 
 
-        final List<Population> evolutionHistory = Population.initRandom(context).evolve(150);
+        final List<Population> evolutionHistory = Population.initRandom(context).evolve(350);
         final List<Stats> stats = evolutionHistory.map(Population::stats);
 
         System.out.println(stats);
