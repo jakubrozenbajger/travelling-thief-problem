@@ -41,7 +41,7 @@ public class Individual {
         return new Individual(context, cloned);
     }
 
-
+    // TODO: return one cross
     public Iterable<Individual> crossover(Individual that) {
         if (context.nextCrossover())
             return Array.of(this.crossoverOne(that), that.crossoverOne(this));

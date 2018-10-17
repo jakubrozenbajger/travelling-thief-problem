@@ -35,7 +35,10 @@ case class Context(
   def nextInt(int: Int): Int = Random.nextInt(int)
 
   def calculate(e: Array[Int]): Double = {
-    (0 to e.length).map(i => distance(e(i))(e((i + 1) % e.length))).sum
+    e.zip(e.tail :+ e.head)
+      .map {
+        case (l: Int, r: Int) => distance(l)(r)
+      }.sum
   }
 
 }

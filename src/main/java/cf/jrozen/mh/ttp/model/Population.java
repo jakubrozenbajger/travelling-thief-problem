@@ -1,5 +1,7 @@
 package cf.jrozen.mh.ttp.model;
 
+import com.google.common.math.Stats;
+import io.vavr.Lazy;
 import io.vavr.collection.Array;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
@@ -9,6 +11,15 @@ public class Population {
 
     private final Context context;
     private final Array<Individual> population;
+    private final Lazy<Stats> statsLazy = Lazy.of(this::calcStats);
+
+    private Stats calcStats() {
+        return Stats.of(population.map(Individual::value));
+    }
+
+    public Stats stats() {
+        return statsLazy.get();
+    }
 
     private Population(Context context, Array<Individual> population) {
         this.context = context;
@@ -46,6 +57,7 @@ public class Population {
     }
 
     private Array<Individual> crossover(Array<Individual> population) {
+        // this.pop.zip(this.pop.shuffle).map(indv::shuffle)
         return Iterator.range(0, population.size() / 2)
                 .flatMap(i -> population.get(i).crossover(population.get(population.size() - 1 - i)))
                 .toArray();

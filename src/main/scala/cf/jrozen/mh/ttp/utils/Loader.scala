@@ -41,12 +41,12 @@ object Loader {
   private def nextValue(scanner: Iterator[String]) = scanner.next().split(REGEX)(1).trim
 
   private def nodeFromLine(line: String) = {
-    val values = line.split("\t").map(_.trim.toDouble)
+    val values = line.split("\\s++").map(_.trim.toDouble)
     Node(values(0).toInt, values(1), values(2))
   }
 
   private def itemFromLine(line: String) = {
-    val values = line.split("\t").map(_.trim.toDouble)
+    val values = line.split("\\s++").map(_.trim.toDouble)
     Item(values(0).toInt, values(1), values(2), values(3).toInt)
   }
 
