@@ -27,7 +27,7 @@ public class Individual {
     private double valueInit() {
 //        return context.calculate(this.locations);
         final Item[] items = GreedyKnapsackSolver.chooseItems(context, this.locations);
-        return context.calculate(this.locations, items);
+        return -context.calculate(this.locations, items);
     }
 
     Individual mutate() {
