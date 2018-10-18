@@ -41,16 +41,25 @@ case class Context(
       }.sum
   }
 
-  def calculate(locationsOrder: Array[Int], items: Array[Item]): Double = {
-    val locationToItems: Map[Int, List[Item]] = items.toList.groupBy(_.assignedNodeNumber)
+
+  def calculate(locationsOrder: Array[Int], items: java.util.Set[Item]): Double = {
+    import collection.JavaConverters._
+    calculate(locationsOrder, items.asScala.toSet)
+  }
+
+  def calculate(locationsOrder: Array[Int], items: Set[Item]): Double = {
+    val locationToItems: Map[Int, Set[Item]] = items.groupBy(_.assignedNodeNumber)
+
+    def itemsInLocation(location: Int) = locationToItems.getOrElse(location, Set())
 
     val thief = new Thief(problem)
 
-    val cost = (locationsOrder :+ locationsOrder.head).sliding(2)
+    val rentingCost = (locationsOrder :+ locationsOrder.head).sliding(2)
       .map {
-        case Array(l: Int, r: Int) => thief.take(locationToItems.getOrElse(l, List())).getSpeed() * distance(l)(r) * problem.rentingRatio
+        case Array(from: Int, to: Int) => thief.steal(itemsInLocation(from)).getSpeed() * distance(from)(to) * problem.rentingRatio
       }.sum
-    thief.value - cost
+
+    thief.stolenValue - rentingCost
   }
 
   class Thief(problem: Problem) {
@@ -58,18 +67,18 @@ case class Context(
     var knapsackValue: Double = _
     var knapsackWeight: Double = _
 
-    def take(items: Iterable[Item]) = {
+    def steal(items: Iterable[Item]): Thief = {
       knapsackValue += items.map(_.profit).sum
       knapsackWeight += items.map(_.weight).sum
       knapsack ++= items
       this
     }
 
-    def getSpeed() = {
+    def getSpeed(): Double = {
       problem.maxSpeed - (knapsackWeight * (problem.maxSpeed - problem.minSpeed) / problem.capacityOfKnapsack)
     }
 
-    def value = knapsackValue
+    def stolenValue: Double = knapsackValue
 
   }
 

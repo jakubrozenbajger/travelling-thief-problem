@@ -13,8 +13,7 @@ import static java.util.function.Function.identity;
 
 public class GreedyKnapsackSolver {
 
-
-    public static Item[] chooseItems(Context context, int[] locations) {
+    public static Set<Item> chooseItems(Context context, int[] locations) {
         final int capacity = context.problem().capacityOfKnapsack();
         final List<Item> allItems = Arrays.asList(context.problem().items());
         double[] distanceToEndFromNodeRatio = distanceToEndFromNodeRatio(context, locations);
@@ -24,22 +23,13 @@ public class GreedyKnapsackSolver {
 
         final Function<Item, Double> itemToValueIncludingDistance = (Item item) -> 1.0 * item.profit() / item.weight() - (capacity * itemToDistanceCostRatio.getOrDefault(item, Double.MAX_VALUE) * item.weight());
 
-
-//        final Knapsack knapsack = new Knapsack(capacity);
-//        return allItems.stream()
-//                .sorted(Comparator.comparing(itemToValueIncludingDistance))
-//                .sequential()
-//                .takeWhile(knapsack::addWhilePossible)
-//                .toArray(Item[]::new);
-//
         return allItems.stream()
                 .sorted(Comparator.comparing(itemToValueIncludingDistance))
                 .sequential()
-                .reduce(new Knapsack(capacity), Knapsack::addIfPossible, assertSequential()).getItemsAsArray();
+                .reduce(new Knapsack(capacity), Knapsack::addIfPossible, assertSequential()).getItems();
     }
 
-
-    public static double[] distanceToEndFromNodeRatio(Context context, int[] locations) {
+    private static double[] distanceToEndFromNodeRatio(Context context, int[] locations) {
         final double[] distanceToEndFromCity = new double[locations.length];
         double totalDistance = 0;
 
@@ -71,7 +61,7 @@ public class GreedyKnapsackSolver {
     static class Knapsack {
 
         private int capacityLeft;
-        private final LinkedList<Item> items = new LinkedList<>();
+        private final Set<Item> items = new HashSet<>();
 
         Knapsack(int capacity) {
             this.capacityLeft = capacity;
@@ -80,22 +70,13 @@ public class GreedyKnapsackSolver {
         private Knapsack addIfPossible(Item item) {
             if (capacityLeft - item.weight() > 0) {
                 capacityLeft -= item.weight();
-                items.addLast(item);
+                items.add(item);
             }
             return this;
         }
 
-        private boolean addWhilePossible(Item item) {
-            boolean result;
-            if (result = (capacityLeft - item.weight() > 0)) {
-                capacityLeft -= item.weight();
-                items.addLast(item);
-            }
-            return result;
-        }
-
-        Item[] getItemsAsArray() {
-            return items.toArray(new Item[items.size()]);
+        Set<Item> getItems() {
+            return items;
         }
     }
 

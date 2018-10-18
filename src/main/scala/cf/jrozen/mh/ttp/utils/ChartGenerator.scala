@@ -22,8 +22,8 @@ class ChartGenerator(
     chart.getStyler.setLegendPosition(Styler.LegendPosition.InsideNE)
     chart.getStyler.setAxisTitlesVisible(true)
 
-    import scala.collection.JavaConversions._
-    val statsArray = stats.toArray
+    import scala.collection.JavaConverters._
+    val statsArray = stats.asScala.toArray
     val xValues = Array.range(0, statsArray.length).map(_.doubleValue)
 
     val transposed: Array[Array[Double]] = statsArray

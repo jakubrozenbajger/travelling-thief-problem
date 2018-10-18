@@ -5,6 +5,8 @@ import com.google.common.primitives.Ints;
 import io.vavr.Lazy;
 import io.vavr.collection.List;
 
+import java.util.Set;
+
 public class Individual {
 
     private final Context context;
@@ -25,9 +27,8 @@ public class Individual {
     }
 
     private double valueInit() {
-//        return context.calculate(this.locations);
-        final Item[] items = GreedyKnapsackSolver.chooseItems(context, this.locations);
-        return -context.calculate(this.locations, items);
+        final Set<Item> items = GreedyKnapsackSolver.chooseItems(context, this.locations);
+        return context.calculate(this.locations, items);
     }
 
     Individual mutate() {

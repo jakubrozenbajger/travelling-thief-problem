@@ -35,8 +35,15 @@ public class Population {
 
     public List<Population> evolve(int times) {
         return Stream.range(0, times)
+                .peek(generation -> printProgress(generation, times))
                 .foldLeft(List.of(this), (acc, i) -> acc.prepend(acc.head().evolve()))
                 .reverse();
+    }
+
+    private void printProgress(int genNo, int times) {
+        System.out.print("\r");
+        System.out.flush();
+        System.out.printf("%.2f%%", genNo * 100.0 / times);
     }
 
     private Population evolve() {
@@ -62,6 +69,7 @@ public class Population {
                 Array.fill(population.size(),
                         () -> pickRandomTournament()
                                 .sortBy(Individual::value)
+                                .reverse()
                                 .head()));
     }
 
