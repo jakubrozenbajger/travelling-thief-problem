@@ -17,11 +17,11 @@ public class Main {
     public static void main(String[] args) {
         System.out.println(Banner.title());
 
-        final Problem trivial_1 = Loader.load("easy_0");
-        final Parameters params = new Parameters(300, 30, 7, 0.031, 0.19);
+        final Problem trivial_1 = Loader.load("medium_4");
+        final Parameters params = new Parameters(200, 30, 7, 1.037, 0.19);
         final Context context = new Context(trivial_1, params);
 
-        final List<Population> evolutionHistory = Population.initRandom(context).evolve(350);
+        final List<Population> evolutionHistory = Population.initRandom(context).evolve(180);
         final List<Stats> stats = evolutionHistory.map(Population::stats);
 
         System.out.println("Last stats: " + stats.last());
@@ -30,6 +30,6 @@ public class Main {
     }
 
     private static ChartGenerator chart() {
-        return new ChartGenerator("TTP GENETIC STATS", "generation", "distance");
+        return new ChartGenerator("TTP GENETIC STATS", "generation", "profit");
     }
 }

@@ -1,5 +1,7 @@
 package cf.jrozen.mh.ttp.model
 
+import cats.Monoid
+
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
@@ -48,18 +50,22 @@ case class Context(
   }
 
   def calculate(locationsOrder: Array[Int], items: Set[Item]): Double = {
-    val locationToItems: Map[Int, Set[Item]] = items.groupBy(_.assignedNodeNumber)
 
-    def itemsInLocation(location: Int) = locationToItems.getOrElse(location, Set())
+    import cats.instances.set._
+    val locationToItems = (l: Int) => withDefault(items.groupBy(_.assignedNodeNumber))(l)
 
     val thief = new Thief(problem)
 
     val rentingCost = (locationsOrder :+ locationsOrder.head).sliding(2)
       .map {
-        case Array(from: Int, to: Int) => thief.steal(itemsInLocation(from)).getSpeed() * distance(from)(to) * problem.rentingRatio
+        case Array(from: Int, to: Int) => thief.steal(locationToItems(from)).getSpeed() * distance(from)(to) * problem.rentingRatio
       }.sum
 
     thief.stolenValue - rentingCost
+  }
+
+  def withDefault[K, V](map: Map[K, V])(k: K)(implicit V: Monoid[V]) = {
+    map.getOrElse(k, V.empty)
   }
 
   class Thief(problem: Problem) {
