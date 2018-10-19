@@ -17,19 +17,24 @@ public class Main {
     public static void main(String[] args) {
         System.out.println(Banner.title());
 
-        final Problem trivial_1 = Loader.load("medium_4");
-        final Parameters params = new Parameters(200, 30, 7, 1.037, 0.19);
-        final Context context = new Context(trivial_1, params);
+        final String problemName = "easy_4";
+        final Parameters params = new Parameters(150, 200, 5, 0.037, 0.219);
 
-        final List<Population> evolutionHistory = Population.initRandom(context).evolve(180);
-        final List<Stats> stats = evolutionHistory.map(Population::stats);
+        final List<Stats> stats = solve(problemName, params);
 
         System.out.println("Last stats: " + stats.last());
 
-        chart().show(stats);
+        chart(params).show(stats);
     }
 
-    private static ChartGenerator chart() {
-        return new ChartGenerator("TTP GENETIC STATS", "generation", "profit");
+    private static List<Stats> solve(String problemName, Parameters params) {
+        final Problem trivial_1 = Loader.load(problemName);
+        final Context context = new Context(trivial_1, params);
+        final List<Population> evolutionHistory = Population.initRandom(context).runEvolution();
+        return evolutionHistory.map(Population::stats);
+    }
+
+    private static ChartGenerator chart(Parameters parameters) {
+        return new ChartGenerator("TTP GENETIC STATS", "generation", "profit", parameters);
     }
 }

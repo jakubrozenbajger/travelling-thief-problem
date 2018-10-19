@@ -33,7 +33,11 @@ public class Population {
         return Array.fill(context.parameters().populationSize(), () -> new Individual(context));
     }
 
-    public List<Population> evolve(int times) {
+    public List<Population> runEvolution() {
+        return evolve(context.parameters().noOfGenerations());
+    }
+
+    private List<Population> evolve(int times) {
         return Stream.range(0, times)
                 .peek(generation -> printProgress(generation, times))
                 .foldLeft(List.of(this), (acc, i) -> acc.prepend(acc.head().evolve()))

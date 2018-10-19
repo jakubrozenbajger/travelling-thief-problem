@@ -1,5 +1,6 @@
 package cf.jrozen.mh.ttp.utils
 
+import cf.jrozen.mh.ttp.model.Parameters
 import com.google.common.math.Stats
 import org.knowm.xchart.style.Styler
 import org.knowm.xchart.{SwingWrapper, XYChartBuilder}
@@ -7,19 +8,20 @@ import org.knowm.xchart.{SwingWrapper, XYChartBuilder}
 class ChartGenerator(
                       chartName: String = "chart" + hashCode(),
                       xTitle: String = "x",
-                      yTitle: String = "y"
+                      yTitle: String = "y",
+                      params: Parameters
                     ) {
 
 
   def show(stats: java.lang.Iterable[Stats]) = {
     val chart = new XYChartBuilder()
-      .width(800).height(600)
-      .title(chartName)
+      .width(800).height(800)
+      .title(s"$chartName (${params.toString})")
       .xAxisTitle(xTitle)
       .yAxisTitle(yTitle)
       .build
 
-    chart.getStyler.setLegendPosition(Styler.LegendPosition.InsideNE)
+    chart.getStyler.setLegendPosition(Styler.LegendPosition.InsideSE)
     chart.getStyler.setAxisTitlesVisible(true)
 
     import scala.collection.JavaConverters._
