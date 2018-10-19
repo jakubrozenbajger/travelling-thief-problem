@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println(Banner.title());
 
-        final String problemName = "easy_4";
+        final String problemName = "medium_2";
         final Parameters params = new Parameters(150, 200, 5, 0.037, 0.219);
 
         final List<Stats> stats = solve(problemName, params);
