@@ -1,6 +1,7 @@
 package cf.jrozen.mh.ttp.model
 
 import cats.Monoid
+import cats.kernel.Semigroup
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
@@ -64,7 +65,7 @@ case class Context(
     thief.stolenValue - rentingCost
   }
 
-  def withDefault[K, V](map: Map[K, V])(k: K)(implicit V: Monoid[V]) = {
+  private def withDefault[K, V](map: Map[K, V])(k: K)(implicit V: Monoid[V]) = {
     map.getOrElse(k, V.empty)
   }
 
