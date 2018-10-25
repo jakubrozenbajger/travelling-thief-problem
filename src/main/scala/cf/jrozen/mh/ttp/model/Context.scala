@@ -1,19 +1,15 @@
 package cf.jrozen.mh.ttp.model
 
 import cats.Monoid
-import cats.kernel.Semigroup
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
-case class Context(
-                    problem: Problem,
-                    parameters: Parameters
-                  ) {
+case class Context(problem: Problem) {
 
-  type Matrix = Array[Array[Double]]
+  def nextIntInDims: Int = Random.nextInt(problem.dimension)
 
-  lazy val distance: Matrix = {
+  lazy val distance: Matrix[Double] = {
     {
       for {
         n1 <- problem.nodes
@@ -24,16 +20,6 @@ case class Context(
       .map(_.toArray)
       .toArray
   }
-
-  def nextIntInDims: Int = Random.nextInt(problem.dimension)
-
-  def `mutate?`: Boolean = nextMutate
-
-  def nextMutate: Boolean = Random.nextDouble() < parameters.mutationProbability
-
-  def `crossover?`: Boolean = nextCrossover
-
-  def nextCrossover: Boolean = Random.nextDouble() < parameters.crossoverProbability
 
   def nextInt(int: Int): Int = Random.nextInt(int)
 
@@ -55,7 +41,7 @@ case class Context(
     import cats.instances.set._
     val locationToItems = (l: Int) => withDefault(items.groupBy(_.assignedNodeNumber))(l)
 
-    val thief = new Thief(problem)
+    val thief = new Thief()
 
     val rentingCost = (locationsOrder :+ locationsOrder.head).sliding(2)
       .map {
@@ -69,7 +55,7 @@ case class Context(
     map.getOrElse(k, V.empty)
   }
 
-  class Thief(problem: Problem) {
+  class Thief {
     val knapsack = new ListBuffer[Item]()
     var knapsackValue: Double = _
     var knapsackWeight: Double = _
@@ -92,6 +78,5 @@ case class Context(
 }
 
 object Context {
-
 
 }

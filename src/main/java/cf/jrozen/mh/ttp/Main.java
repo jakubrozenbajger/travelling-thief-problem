@@ -2,9 +2,9 @@ package cf.jrozen.mh.ttp;
 
 
 import cf.jrozen.mh.ttp.model.Context;
-import cf.jrozen.mh.ttp.model.Parameters;
 import cf.jrozen.mh.ttp.model.Population;
 import cf.jrozen.mh.ttp.model.Problem;
+import cf.jrozen.mh.ttp.slover.genetic.GeneticParameters;
 import cf.jrozen.mh.ttp.utils.Banner;
 import cf.jrozen.mh.ttp.utils.ChartGenerator;
 import cf.jrozen.mh.ttp.utils.Loader;
@@ -17,8 +17,8 @@ public class Main {
     public static void main(String[] args) {
         System.out.println(Banner.title());
 
-        final String problemName = "hard_1";
-        final Parameters params = new Parameters(50, 200, 4, 0.037, 0.219);
+        final String problemName = "trivial_1";
+        final GeneticParameters params = new GeneticParameters(150, 200, 5, 0.037, 0.219);
 
         final List<Stats> stats = solve(problemName, params);
 
@@ -27,14 +27,14 @@ public class Main {
         chart(params).show(stats);
     }
 
-    private static List<Stats> solve(String problemName, Parameters params) {
+    private static List<Stats> solve(String problemName, GeneticParameters params) {
         final Problem trivial_1 = Loader.load(problemName);
-        final Context context = new Context(trivial_1, params);
-        final List<Population> evolutionHistory = Population.initRandom(context).runEvolution();
+        final Context context = new Context(trivial_1);
+        final List<Population> evolutionHistory = Population.initRandom(context, params).runEvolution();
         return evolutionHistory.map(Population::stats);
     }
 
-    private static ChartGenerator chart(Parameters parameters) {
-        return new ChartGenerator("TTP GENETIC STATS", "generation", "profit", parameters);
+    private static ChartGenerator chart(GeneticParameters geneticParameters) {
+        return new ChartGenerator("TTP GENETIC STATS", "generation", "profit", geneticParameters);
     }
 }

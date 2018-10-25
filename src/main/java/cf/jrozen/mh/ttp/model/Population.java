@@ -1,40 +1,47 @@
 package cf.jrozen.mh.ttp.model;
 
+import cf.jrozen.mh.ttp.slover.genetic.GeneticParameters;
 import com.google.common.math.Stats;
 import io.vavr.Lazy;
 import io.vavr.collection.Array;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 
+import java.util.Random;
+
 public class Population {
 
+    private static final Random rnd = new Random();
+
     private final Context context;
-    private final Array<Individual> population;
+    private final GeneticParameters geneticParameters;
+    private final Array<GeneticIndividual> population;
     private final Lazy<Stats> statsLazy = Lazy.of(this::calcStats);
 
     private Stats calcStats() {
-        return Stats.of(population.map(Individual::value));
+        return Stats.of(population.map(GeneticIndividual::value));
     }
 
     public Stats stats() {
         return statsLazy.get();
     }
 
-    private Population(Context context, Array<Individual> population) {
+    private Population(Context context, GeneticParameters geneticParameters, Array<GeneticIndividual> population) {
         this.context = context;
+        this.geneticParameters = geneticParameters;
         this.population = population;
     }
 
-    public static Population initRandom(Context context) {
-        return new Population(context, initRandomPopulation(context));
+    public static Population initRandom(Context context, GeneticParameters geneticParameters) {
+        return new Population(context, geneticParameters, initRandomPopulation(context, geneticParameters));
     }
 
-    private static Array<Individual> initRandomPopulation(Context context) {
-        return Array.fill(context.parameters().populationSize(), () -> new Individual(context));
+    private static Array<GeneticIndividual> initRandomPopulation(Context context, GeneticParameters geneticParameters) {
+        return Array.fill(geneticParameters.populationSize(), () -> new GeneticIndividual(context, geneticParameters));
     }
 
     public List<Population> runEvolution() {
-        return evolve(context.parameters().noOfGenerations());
+        return evolve(geneticParameters.noOfGenerations());
     }
 
     private List<Population> evolve(int times) {
@@ -57,34 +64,34 @@ public class Population {
     }
 
     private Population mutate() {
-        return new Population(context, population.map(Individual::mutate));
+        return new Population(context, geneticParameters, population.map(GeneticIndividual::mutate));
     }
 
     private Population crossover() {
-        return new Population(context,
+        return new Population(context, geneticParameters,
                 this.population.zipWith(this.population.shuffle(),
-                        Individual::crossover
+                        GeneticIndividual::crossover
                 ).toArray()
         );
     }
 
     private Population select() {
-        return new Population(context,
+        return new Population(context, geneticParameters,
                 Array.fill(population.size(),
                         () -> pickRandomTournament()
-                                .sortBy(Individual::value)
+                                .sortBy(GeneticIndividual::value)
                                 .reverse()
                                 .head()));
     }
 
-    private Array<Individual> pickRandomTournament() {
-        return Array.fill(context.parameters().tournamentSize(), () -> population.get(context.nextInt(population.length())));
+    private Array<GeneticIndividual> pickRandomTournament() {
+        return Array.fill(geneticParameters.tournamentSize(), () -> population.get(rnd.nextInt(population.length())));
     }
 
     @Override
     public String toString() {
         return "Population{" +
-                "context=" + context +
+                "geneticParameters=" + geneticParameters +
                 ", population=" + population +
                 '}';
     }

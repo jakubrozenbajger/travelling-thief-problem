@@ -35,7 +35,7 @@ public class GreedyKnapsackSolver {
 
     private static <T extends Comparable<T>> Item[] sortDsc(Item[] items, Function<Item, T> keyExtractor) {
         return cache.computeIfAbsent(items, i -> {
-            final Item[] copy = Arrays.copyOf(i, i.length);
+            final Item[] copy = items.clone();
             Arrays.sort(copy, Comparator.comparing(keyExtractor).reversed());
             return copy;
         });

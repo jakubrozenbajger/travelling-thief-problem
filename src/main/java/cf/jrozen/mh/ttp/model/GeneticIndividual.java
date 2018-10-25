@@ -1,60 +1,59 @@
 package cf.jrozen.mh.ttp.model;
 
-import cf.jrozen.mh.ttp.GreedyKnapsackSolver;
+import cf.jrozen.mh.ttp.slover.genetic.GeneticParameters;
 import com.google.common.primitives.Ints;
 import io.vavr.Lazy;
 import io.vavr.collection.List;
 
-import java.util.Set;
-
-public class Individual {
+public class GeneticIndividual {
 
     private final Context context;
+    private final GeneticParameters geneticParameters;
     private final int[] locations;
     private final Lazy<Double> value = Lazy.of(this::valueInit);
 
-    Individual(Context context) {
-        this(context, randomGenes(context));
+    GeneticIndividual(Context context, GeneticParameters geneticParameters) {
+        this(context, geneticParameters, randomGenes(context));
     }
 
-    Double value() {
+    public Double value() {
         return value.get();
     }
 
-    private Individual(Context context, final int[] locations) {
+    private GeneticIndividual(Context context, GeneticParameters geneticParameters, final int[] locations) {
         this.context = context;
+        this.geneticParameters = geneticParameters;
         this.locations = locations;
     }
 
     private double valueInit() {
-        final Set<Item> items = GreedyKnapsackSolver.chooseItems(context, this.locations);
-        return context.calculate(this.locations, items);
+        return new Individual(locations, context).value();
     }
 
-    Individual mutate() {
+    GeneticIndividual mutate() {
         final int[] cloned = locations.clone();
         for (int currInd = 0; currInd < locations.length; currInd++) {
-            if (context.nextMutate()) {
+            if (geneticParameters.nextMutate()) {
                 final int randomInd = context.nextIntInDims();
                 int tmp = cloned[currInd];
                 cloned[currInd] = cloned[randomInd];
                 cloned[randomInd] = tmp;
             }
         }
-        return new Individual(context, cloned);
+        return new GeneticIndividual(context, geneticParameters, cloned);
     }
 
-    Individual crossover(Individual that) {
-        if (context.nextCrossover())
+    GeneticIndividual crossover(GeneticIndividual that) {
+        if (geneticParameters.nextCrossover())
             return this.crossoverOne(that);
         else
             return this;
     }
 
-    private Individual crossoverOne(Individual that) {
+    private GeneticIndividual crossoverOne(GeneticIndividual that) {
         final List<Integer> genes = List.ofAll(crossArrays(this.locations, that.locations));
         final List<Integer> fstNotUsed = List.range(0, context.problem().dimension()).removeAll(genes);
-        return new Individual(context, toArray(genes.distinct().appendAll(fstNotUsed)));
+        return new GeneticIndividual(context, geneticParameters, toArray(genes.distinct().appendAll(fstNotUsed)));
     }
 
     private static int[] randomGenes(Context context) {
