@@ -25,7 +25,21 @@ case class TabuBase()(implicit context: Context, params: TabuParameters) {
 
   def value(x: Int, y: Int): Int = existenceMatrix(x)(y) - moves
 
-  val base = new mutable.HashSet[Individual]()
+  //  val base = new mutable.HashMap[Individual, Int]()
+  val base = new mutable.LinkedHashSet[Individual]()
 
+  //
+  @mutable
+  def move(indv: Individual): Unit = {
+    base.add(indv)
+    if (base.size >= params.tabuSize) {
+      println(base.size)
+      base.remove(base.last)
+    }
+  }
+
+  def canVisit(indv: Individual): Boolean = {
+    !base.contains(indv)
+  }
 
 }

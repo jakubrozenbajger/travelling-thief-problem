@@ -36,12 +36,13 @@ case class Context(problem: Problem) {
     calculate(locationsOrder, items.asScala.toSet)
   }
 
-  private val locationToItemsSet: Map[Int, Set[Item]] = problem.items.groupBy(_.assignedNodeNumber).mapValues(_.toSet)
+  private val locationToItemsMap: Map[Int, Set[Item]] = problem.items.groupBy(_.assignedNodeNumber).mapValues(_.toSet)
 
-  val locationToAllItems: Int => Set[Item] = l => {
-    import cats.instances.set._
-    withDefault(locationToItemsSet)(l)
-  }
+  private val locationToAllItems: Int => Set[Item] = locationId => locationToItemsMap.getOrElse(locationId, Set.empty)
+
+  private val locationToItemsArr: Array[Set[Item]] = Array.range(0, problem.dimension).map(locationToAllItems)
+
+ private val locationToAllItemsOptimized: Int => Set[Item] = locationToItemsArr
 
   def calculate(locationsOrder: Array[Int], items: Set[Item]): Double = {
     var profit = 0.0
@@ -51,7 +52,7 @@ case class Context(problem: Problem) {
       val nodeId = locationsOrder(i)
       val nextNodeId = locationsOrder((i + 1) % locationsOrder.length)
 
-      for (choosenItem <- locationToAllItems(nodeId) if items.contains(choosenItem)) {
+      for (choosenItem <- locationToAllItemsOptimized(nodeId) if items.contains(choosenItem)) {
         profit += choosenItem.profit
         weight += choosenItem.weight
       }

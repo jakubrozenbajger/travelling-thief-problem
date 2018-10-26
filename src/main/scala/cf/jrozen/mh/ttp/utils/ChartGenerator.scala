@@ -42,7 +42,7 @@ class ChartGenerator(
     new SwingWrapper(chart).displayChart()
   }
 
-  def show(stats: List[Double]) = {
+  def show(stats: (Array[Double], Array[Double])) = {
     val chart = new XYChartBuilder()
       .width(800).height(800)
       .title(s"$chartName (${params.toString})")
@@ -53,7 +53,8 @@ class ChartGenerator(
     chart.getStyler.setLegendPosition(Styler.LegendPosition.InsideSE)
     chart.getStyler.setAxisTitlesVisible(true)
 
-    chart.addSeries("value", stats.toArray)
+    chart.addSeries("value best", stats._1)
+    chart.addSeries("valueSnd", stats._2)
 
     new SwingWrapper(chart).displayChart()
   }

@@ -1,6 +1,8 @@
 package cf.jrozen.mh.ttp.model
 
 
+import java.util
+
 import cf.jrozen.mh.ttp.utils.ValueCache
 import cf.jrozen.mh.ttp.{GreedyKnapsackSolver, mutable}
 
