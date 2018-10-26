@@ -41,5 +41,5 @@ case class Individual(private val locations: Array[Int])(implicit context: Conte
 
 object Individual {
   def random(implicit context: Context): Individual =
-    Individual(Random.shuffle((0 until context.problem.dimension).toList).toArray)
+    Individual(Random.shuffle(List.range(0, context.problem.dimension)).toArray)
 }

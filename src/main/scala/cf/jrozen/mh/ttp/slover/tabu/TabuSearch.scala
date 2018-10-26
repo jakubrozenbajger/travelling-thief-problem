@@ -8,9 +8,10 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
 
 
   def getBestNeighbour(tabuBase: TabuBase, solution: Individual): Individual = {
-    var bestSolution = solution.copy()
+    var best = solution
 
-    var (n1, n2) = (0, 0)
+    var n1 = 0
+    var n2 = 0
     var firstNeighbour = true
 
     for {
@@ -18,18 +19,18 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
       j <- 2 until context.problem.dimension
       if i != j
     } {
-      val newBestSolution = bestSolution.swap(i, j)
-      if ((newBestSolution > bestSolution || firstNeighbour) && tabuBase.isEmpty(i, j)) {
+      val curr = best.swap(i, j)
+      if ((curr > best || firstNeighbour) && tabuBase.canVisit(i, j)) {
         firstNeighbour = false
         n1 = i
         n2 = j
-        bestSolution = newBestSolution
+        best = curr
       }
     }
     if (n1 != 0) {
       tabuBase.move(n1, n2)
     }
-    bestSolution
+    best
   }
 
   def run: List[Individual] = {
@@ -39,14 +40,21 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
     var bestSolution = Individual.random
     individuals += bestSolution
 
-    for (_ <- 0 until params.noOfIterations) {
+    for (i <- 0 until params.noOfIterations) {
+      individuals += bestSolution
       val currentSollution = getBestNeighbour(tabuBase, bestSolution)
       if (currentSollution > bestSolution) {
-        bestSolution = currentSollution.copy()
+        bestSolution = currentSollution
       }
-      individuals += bestSolution
+      printProgress(i, params.noOfIterations)
     }
     individuals.toList
+  }
+
+  private def printProgress(no: Int, total: Int): Unit = {
+    print("\r")
+    Console.flush()
+    printf("%.2f%%", no * 100.0 / total)
   }
 
 }

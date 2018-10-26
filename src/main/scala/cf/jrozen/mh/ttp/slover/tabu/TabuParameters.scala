@@ -5,6 +5,7 @@ import cats.Show
 case class TabuParameters(
                            tabuDuration: Int,
                            noOfIterations: Integer,
+                           tabuSize: Int
                          )
 
 object TabuParameters {

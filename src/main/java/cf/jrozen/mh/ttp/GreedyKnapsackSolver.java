@@ -22,6 +22,7 @@ public class GreedyKnapsackSolver {
         final Function<Item, Double> itemToValueIncludingDistance = (Item item) -> 1.0 * item.profit() / item.weight();// - (capacity * itemToDistanceCostRatio.getOrDefault(item, Double.MAX_VALUE) * item.weight());
 
         final Item[] sorted = sortDsc(allItems, itemToValueIncludingDistance);
+//        final Item[] sorted = allItems;
 
         final Knapsack knapsack = new Knapsack(context.problem().capacityOfKnapsack());
 

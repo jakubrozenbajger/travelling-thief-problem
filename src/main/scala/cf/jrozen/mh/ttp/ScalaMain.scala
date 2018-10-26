@@ -8,8 +8,8 @@ import cf.jrozen.mh.ttp.utils.{Banner, ChartGenerator, Loader}
 object ScalaMain extends App {
 
   System.out.println(Banner.title)
-  val problemName = "trivial_1"
-  val params = TabuParameters(8, 700)
+  val problemName = "medium_1"
+  val params = TabuParameters(6, 50, 50)
   val stats = solve(problemName, params)
   System.out.println("Last stats: " + stats.last)
   chart(params).show(stats)
@@ -20,7 +20,7 @@ object ScalaMain extends App {
     tabuSearch.run.map(_.value)
   }
 
-  private def chart[T: Show](params: T) = new ChartGenerator("TTP GENETIC STATS", "generation", "profit", implicitly[Show[T]].show(params))
+  private def chart[T: Show](params: T) = new ChartGenerator("TTP TABU STATS", "generation", "profit", implicitly[Show[T]].show(params))
 
 
 }

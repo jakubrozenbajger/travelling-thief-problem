@@ -36,20 +36,44 @@ case class Context(problem: Problem) {
     calculate(locationsOrder, items.asScala.toSet)
   }
 
-  def calculate(locationsOrder: Array[Int], items: Set[Item]): Double = {
+  private val locationToItemsSet: Map[Int, Set[Item]] = problem.items.groupBy(_.assignedNodeNumber).mapValues(_.toSet)
 
+  val locationToAllItems: Int => Set[Item] = l => {
     import cats.instances.set._
-    val locationToItems = (l: Int) => withDefault(items.groupBy(_.assignedNodeNumber))(l)
-
-    val thief = new Thief()
-
-    val rentingCost = (locationsOrder :+ locationsOrder.head).sliding(2)
-      .map {
-        case Array(from: Int, to: Int) => thief.steal(locationToItems(from)).getSpeed() * distance(from)(to) * problem.rentingRatio
-      }.sum
-
-    thief.stolenValue - rentingCost
+    withDefault(locationToItemsSet)(l)
   }
+
+  def calculate(locationsOrder: Array[Int], items: Set[Item]): Double = {
+    var profit = 0.0
+    var weight = 0.0
+    var totalTime = 0.0
+    locationsOrder.indices foreach { i =>
+      val nodeId = locationsOrder(i)
+      val nextNodeId = locationsOrder((i + 1) % locationsOrder.length)
+
+      for (choosenItem <- locationToAllItems(nodeId) if items.contains(choosenItem)) {
+        profit += choosenItem.profit
+        weight += choosenItem.weight
+      }
+      totalTime += distance(nodeId)(nextNodeId) / (problem.maxSpeed - weight * (problem.maxSpeed - problem.minSpeed) / problem.capacityOfKnapsack)
+    }
+    profit - totalTime * problem.rentingRatio
+  }
+
+  /*  def calculate(locationsOrder: Array[Int], items: Set[Item]): Double = {
+
+      import cats.instances.set._
+      val locationToItems = (l: Int) => withDefault(items.groupBy(_.assignedNodeNumber))(l)
+
+      val thief = new Thief()
+
+      val rentingCost = locationsOrder.zip(locationsOrder.tail :+ locationsOrder.head)
+        .map {
+          case (from: Int, to: Int) => thief.steal(locationToItems(from)).getSpeed() * distance(from)(to) * problem.rentingRatio
+        }.sum
+
+      thief.stolenValue - rentingCost
+    }*/
 
   private def withDefault[K, V](map: Map[K, V])(k: K)(implicit V: Monoid[V]) = {
     map.getOrElse(k, V.empty)
