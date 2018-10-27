@@ -7,58 +7,58 @@ import scala.collection.mutable.ListBuffer
 class TabuSearch()(implicit context: Context, params: TabuParameters) {
 
 
-  //  def getBestNeighbour(tabuBase: TabuBase, solution: Individual): Individual = {
-  //    var best = solution
-  //
-  //    for {
-  //      i <- 1 until context.problem.dimension
-  //      j <- 2 until context.problem.dimension
-  //      if i != j
-  //    } {
-  //      val curr = best.swap(i, j)
-  //      if (curr != solution && tabuBase.canVisit(curr) && curr > best) {
-  //        best = curr
-  //      }
-  //    }
-  //    tabuBase.move(best)
-  //    best
-  //
-  //
-  //  }
+  def getBestNeighbour(tabuBase: TabuBase, solution: Individual): Individual = {
+    var best = solution
+    var first = true
 
-
-  private def getBestNeighbour(tabuBase: TabuBase, solution: Individual) = {
-    var bestSolution = solution.copy()
-    var node1: Int = 0
-    var node2: Int = 0
-    var firstNeighbour: Boolean = true
-    var i: Int = 1
-    while ( {
-      i < context.problem.dimension
-    }) {
-      var j: Int = 2
-      while ( {
-        j < context.problem.dimension
-      }) {
-        if (i != j) {
-
-          val newBestSolution = bestSolution.swap(i, j)
-          if ((newBestSolution > bestSolution || firstNeighbour) && tabuBase.canVisit(i, j)) {
-            firstNeighbour = false
-            node1 = i
-            node2 = j
-            bestSolution = newBestSolution.copy()
-          }
-        }
-        j += 1
+    for {
+      i <- 1 until context.problem.dimension
+      j <- 2 until context.problem.dimension
+      if i != j
+    } {
+      val curr = best.swap(i, j)
+      if (tabuBase.canVisit(curr) && (first || curr > best)) {
+        best = curr
+        first = false
       }
-      i += 1
     }
-    if (node1 != 0) {
-      tabuBase.move(node1, node2)
-    }
-    bestSolution
+    tabuBase.move(best)
+    best
   }
+
+
+  //  private def getBestNeighbour(tabuBase: TabuBase, solution: Individual) = {
+  //    var bestSolution = solution.copy()
+  //    var node1: Int = 0
+  //    var node2: Int = 0
+  //    var firstNeighbour: Boolean = true
+  //    var i: Int = 1
+  //    while ( {
+  //      i < context.problem.dimension
+  //    }) {
+  //      var j: Int = 2
+  //      while ( {
+  //        j < context.problem.dimension
+  //      }) {
+  //        if (i != j) {
+  //
+  //          val newBestSolution = bestSolution.swap(i, j)
+  //          if ((newBestSolution > bestSolution || firstNeighbour) && tabuBase.canVisit(i, j)) {
+  //            firstNeighbour = false
+  //            node1 = i
+  //            node2 = j
+  //            bestSolution = newBestSolution.copy()
+  //          }
+  //        }
+  //        j += 1
+  //      }
+  //      i += 1
+  //    }
+  //    if (node1 != 0) {
+  //      tabuBase.move(node1, node2)
+  //    }
+  //    bestSolution
+  //  }
 
   def run: (List[Individual], List[Individual]) = {
     val tabuBase = TabuBase()

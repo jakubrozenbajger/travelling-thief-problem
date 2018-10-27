@@ -1,15 +1,17 @@
 package cf.jrozen.mh.ttp.model
 
 
+import cf.jrozen.mh.ttp.utils.ValueCache
 import cf.jrozen.mh.ttp.{GreedyKnapsackSolver, mutable}
 
 import scala.util.Random
 
 case class Individual(val locations: Array[Int])(implicit context: Context) extends Ordered[Individual] {
 
-  def value: Double = valueInit //.get
+  //  def value: Double = valueInit
+  def value: Double = valueCache.get
 
-  //  private val valueCache = ValueCache[Double](() => valueInit)
+  private val valueCache = ValueCache[Double](() => valueInit)
 
   private def valueInit = {
     val items = GreedyKnapsackSolver.chooseItems(context, this.locations)
@@ -21,7 +23,7 @@ case class Individual(val locations: Array[Int])(implicit context: Context) exte
     val x = locations(idx1)
     locations(idx1) = locations(idx2)
     locations(idx2) = x
-    //    valueCache.invalidate
+    valueCache.invalidate
     this
   }
 
@@ -33,9 +35,22 @@ case class Individual(val locations: Array[Int])(implicit context: Context) exte
     Individual(swapped)
   }
 
-  override def compare(that: Individual): Int = value.compareTo(that.value)
+  override def compare(that: Individual): Int = (value * 100).intValue().compareTo((that.value * 100).intValue())
 
   def copy() = Individual(locations)
+
+  override def canEqual(a: Any): Boolean = a.isInstanceOf[Individual]
+
+  override def equals(that: Any): Boolean =
+    that match {
+      case that: Individual => that.canEqual(this) && this.value - that.value < 0.001d
+      case _ => false
+    }
+
+  override def hashCode: Int = {
+    (this.value * 100).intValue()
+  }
+
 }
 
 object Individual {

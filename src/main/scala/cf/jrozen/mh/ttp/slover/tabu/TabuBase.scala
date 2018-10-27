@@ -34,8 +34,7 @@ case class TabuBase()(implicit context: Context, params: TabuParameters) {
   def move(indv: Individual): Unit = {
     base.add(indv)
     if (base.size >= params.tabuSize) {
-      println(base.size)
-      base.remove(base.last)
+      base.remove(base.head)
     }
   }
 
