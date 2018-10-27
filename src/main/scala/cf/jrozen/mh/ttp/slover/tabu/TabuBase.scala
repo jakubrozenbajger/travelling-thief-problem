@@ -14,6 +14,7 @@ case class TabuBase()(implicit context: Context, params: TabuParameters) {
   def move(x: Int, y: Int): Unit = {
     moves += 1
     existenceMatrix(x)(y) = 0.max(value(x, y)) + params.tabuDuration
+    existenceMatrix(y)(x) = 0.max(value(y, x)) + params.tabuDuration
   }
 
   def canVisit(x: Int, y: Int): Boolean = value(x, y) <= 0

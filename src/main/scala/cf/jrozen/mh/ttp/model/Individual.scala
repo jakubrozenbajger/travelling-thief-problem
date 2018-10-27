@@ -1,18 +1,15 @@
 package cf.jrozen.mh.ttp.model
 
 
-import java.util
-
-import cf.jrozen.mh.ttp.utils.ValueCache
 import cf.jrozen.mh.ttp.{GreedyKnapsackSolver, mutable}
 
 import scala.util.Random
 
-case class Individual(private val locations: Array[Int])(implicit context: Context) extends Ordered[Individual] {
+case class Individual(val locations: Array[Int])(implicit context: Context) extends Ordered[Individual] {
 
-  def value: Double = valueCache.get
+  def value: Double = valueInit //.get
 
-  private val valueCache = ValueCache[Double](() => valueInit)
+  //  private val valueCache = ValueCache[Double](() => valueInit)
 
   private def valueInit = {
     val items = GreedyKnapsackSolver.chooseItems(context, this.locations)
@@ -24,7 +21,7 @@ case class Individual(private val locations: Array[Int])(implicit context: Conte
     val x = locations(idx1)
     locations(idx1) = locations(idx2)
     locations(idx2) = x
-    valueCache.invalidate
+    //    valueCache.invalidate
     this
   }
 
@@ -38,10 +35,13 @@ case class Individual(private val locations: Array[Int])(implicit context: Conte
 
   override def compare(that: Individual): Int = value.compareTo(that.value)
 
-  def copy() = Individual(locations.clone())
+  def copy() = Individual(locations)
 }
 
 object Individual {
   def random(implicit context: Context): Individual =
     Individual(Random.shuffle(List.range(0, context.problem.dimension)).toArray)
+
+  def apply(loc: Array[Int])(implicit context: Context) = new Individual(loc.clone())
+
 }

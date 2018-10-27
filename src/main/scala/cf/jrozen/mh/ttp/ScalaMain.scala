@@ -9,7 +9,7 @@ object ScalaMain extends App {
 
   System.out.println(Banner.title)
   val problemName = "medium_1"
-  val params = TabuParameters(-510, 670, 30)
+  val params = TabuParameters(80, 570, 30)
   val stats = solve(problemName, params)
   System.out.println("Last stats: " + stats._1.last)
   chart(params).show(stats)

@@ -7,21 +7,57 @@ import scala.collection.mutable.ListBuffer
 class TabuSearch()(implicit context: Context, params: TabuParameters) {
 
 
-  def getBestNeighbour(tabuBase: TabuBase, solution: Individual): Individual = {
-    var best = solution
+  //  def getBestNeighbour(tabuBase: TabuBase, solution: Individual): Individual = {
+  //    var best = solution
+  //
+  //    for {
+  //      i <- 1 until context.problem.dimension
+  //      j <- 2 until context.problem.dimension
+  //      if i != j
+  //    } {
+  //      val curr = best.swap(i, j)
+  //      if (curr != solution && tabuBase.canVisit(curr) && curr > best) {
+  //        best = curr
+  //      }
+  //    }
+  //    tabuBase.move(best)
+  //    best
+  //
+  //
+  //  }
 
-    for {
-      i <- 1 until context.problem.dimension
-      j <- 2 until context.problem.dimension
-      if i != j
-    } {
-      val curr = best.swap(i, j)
-      if (curr != solution && tabuBase.canVisit(curr) && curr > best) {
-        best = curr
+
+  private def getBestNeighbour(tabuBase: TabuBase, solution: Individual) = {
+    var bestSolution = solution.copy()
+    var node1: Int = 0
+    var node2: Int = 0
+    var firstNeighbour: Boolean = true
+    var i: Int = 1
+    while ( {
+      i < context.problem.dimension
+    }) {
+      var j: Int = 2
+      while ( {
+        j < context.problem.dimension
+      }) {
+        if (i != j) {
+
+          val newBestSolution = bestSolution.swap(i, j)
+          if ((newBestSolution > bestSolution || firstNeighbour) && tabuBase.canVisit(i, j)) {
+            firstNeighbour = false
+            node1 = i
+            node2 = j
+            bestSolution = newBestSolution.copy()
+          }
+        }
+        j += 1
       }
+      i += 1
     }
-    tabuBase.move(best)
-    best
+    if (node1 != 0) {
+      tabuBase.move(node1, node2)
+    }
+    bestSolution
   }
 
   def run: (List[Individual], List[Individual]) = {
@@ -30,11 +66,11 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
     val individuals = new ListBuffer[Individual]()
     val secondIndividuals = new ListBuffer[Individual]()
     var bestSolution = Individual.random
-
+    var currentSollution = bestSolution
     var lastChange = 0
     for (i <- 0 until params.noOfIterations if lastChange < params.noOfIterations / 3.0) {
+      currentSollution = getBestNeighbour(tabuBase, currentSollution)
       individuals += bestSolution
-      val currentSollution = getBestNeighbour(tabuBase, bestSolution)
       secondIndividuals += currentSollution
       if (currentSollution > bestSolution) {
         bestSolution = currentSollution
