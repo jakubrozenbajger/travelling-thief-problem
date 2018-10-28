@@ -59,4 +59,20 @@ class ChartGenerator(
     new SwingWrapper(chart).displayChart()
   }
 
+  def show(stats: Array[Double]) = {
+    val chart = new XYChartBuilder()
+      .width(800).height(800)
+      .title(s"$chartName (${params.toString})")
+      .xAxisTitle(xTitle)
+      .yAxisTitle(yTitle)
+      .build
+
+    chart.getStyler.setLegendPosition(Styler.LegendPosition.InsideSE)
+    chart.getStyler.setAxisTitlesVisible(true)
+
+    chart.addSeries("value best", stats)
+
+    new SwingWrapper(chart).displayChart()
+  }
+
 }
