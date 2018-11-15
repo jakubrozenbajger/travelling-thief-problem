@@ -18,8 +18,8 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
       i <- 1 until dim
       j <- 2 until dim
       if i != j
-      if i > rnd.nextInt(dim)
-      if j < rnd.nextInt(dim)
+      if i / 2 < rnd.nextInt(dim)
+      if j * 2 < rnd.nextInt(dim)
     } {
       val curr = best.swap(i, j)
       if (tabuBase.canVisit(curr) && (first || curr > best)) {
