@@ -8,8 +8,8 @@ import cf.jrozen.mh.ttp.utils.{Banner, ChartGenerator, Loader}
 object ScalaMainSA extends App {
 
   System.out.println(Banner.title)
-  val problemName = "hard_1"
-  val params = SimulatedAnnealingParameters(iterations = 10000, startingTemperature = 200.0, coolingRate = 0.0001, stopTemperature = 0.0000001)
+  val problemName = "medium_1"
+  val params = SimulatedAnnealingParameters(iterations = 100000, startingTemperature = 200.0, coolingRate = 0.0001, stopTemperature = 0.0000001)
   val stats: (Array[Double], Array[Double]) = solve(problemName, params).swap
   System.out.println("Last stats: " + stats._1.last)
   chart(params).show(stats)
@@ -23,5 +23,9 @@ object ScalaMainSA extends App {
 
   private def chart[T: Show](params: T) = new ChartGenerator("TTP SA STATS", "generation", "profit", implicitly[Show[T]].show(params))
 
+
+  def runFor(problem: String, parameters: SimulatedAnnealingParameters) = {
+
+  }
 
 }
