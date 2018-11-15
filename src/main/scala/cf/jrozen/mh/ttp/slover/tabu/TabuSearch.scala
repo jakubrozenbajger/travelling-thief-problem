@@ -14,12 +14,13 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
     var best = solution.copy()
     var first = true
 
+    val loglog = Math.log(Math.log(dim))
+
     for {
       i <- 1 until dim
       j <- 2 until dim
       if i != j
-      if i / 2 < rnd.nextInt(dim)
-      if j * 2 < rnd.nextInt(dim)
+      if loglog > rnd.nextInt(dim)
     } {
       val curr = best.swap(i, j)
       if (tabuBase.canVisit(curr) && (first || curr > best)) {

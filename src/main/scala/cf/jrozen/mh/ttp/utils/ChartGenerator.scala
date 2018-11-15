@@ -1,6 +1,7 @@
 package cf.jrozen.mh.ttp.utils
 
 import com.google.common.math.Stats
+import javax.swing.JFrame
 import org.knowm.xchart.style.Styler
 import org.knowm.xchart.{SwingWrapper, XYChartBuilder}
 
@@ -12,7 +13,12 @@ class ChartGenerator(
                     ) {
 
 
-  def show(stats: java.lang.Iterable[Stats]) = {
+  def show(stats: java.lang.Iterable[Stats]): JFrame = {
+    import collection.convert.ImplicitConversionsToScala._
+    show(stats.toList)
+  }
+
+  def show(stats: List[Stats]): JFrame = {
     val chart = new XYChartBuilder()
       .width(800).height(800)
       .title(s"$chartName (${params.toString})")
@@ -22,9 +28,7 @@ class ChartGenerator(
 
     chart.getStyler.setLegendPosition(Styler.LegendPosition.InsideSE)
     chart.getStyler.setAxisTitlesVisible(true)
-
-    import scala.collection.JavaConverters._
-    val statsArray = stats.asScala.toArray
+    val statsArray = stats.toArray
     val xValues = Array.range(0, statsArray.length).map(_.doubleValue)
 
     val transposed: Array[Array[Double]] = statsArray

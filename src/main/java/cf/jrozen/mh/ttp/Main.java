@@ -17,8 +17,8 @@ public class Main {
     public static void main(String[] args) {
         System.out.println(Banner.title());
 
-        final String problemName = "trivial_1";
-        final GeneticParameters params = new GeneticParameters(150, 200, 5, 0.037, 0.219);
+        final String problemName = "medium_1";
+        final GeneticParameters params = new GeneticParameters(130, 400, 5, 0.022, 0.119);
 
         final List<Stats> stats = solve(problemName, params);
 

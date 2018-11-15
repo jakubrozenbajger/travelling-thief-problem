@@ -1,5 +1,7 @@
 package cf.jrozen.mh.ttp.slover.genetic
 
+import cats.Show
+
 import scala.util.Random
 
 case class GeneticParameters(
@@ -18,4 +20,10 @@ case class GeneticParameters(
 
   def nextCrossover: Boolean = Random.nextDouble() < this.crossoverProbability
 
+}
+
+object GeneticParameters {
+  implicit val tabuParamsShow = new Show[GeneticParameters] {
+    override def show(t: GeneticParameters): String = t.toString
+  }
 }
