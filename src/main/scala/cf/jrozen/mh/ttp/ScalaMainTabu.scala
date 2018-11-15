@@ -5,11 +5,11 @@ import cf.jrozen.mh.ttp.model.Context
 import cf.jrozen.mh.ttp.slover.tabu.{TabuParameters, TabuSearch}
 import cf.jrozen.mh.ttp.utils.{Banner, ChartGenerator, Loader}
 
-object ScalaMain extends App {
+object ScalaMainTabu extends App {
 
   System.out.println(Banner.title)
   val problemName = "medium_1"
-  val params = TabuParameters(80, 570, 60)
+  val params = TabuParameters(noOfIterations = 600, tabuSize = 120)
   val stats = solve(problemName, params)
   System.out.println("Last stats: " + stats._1.last)
   chart(params).show(stats)

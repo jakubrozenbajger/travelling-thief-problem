@@ -3,8 +3,7 @@ package cf.jrozen.mh.ttp.slover.tabu
 import cats.Show
 
 case class TabuParameters(
-                           tabuDuration: Int,
-                           noOfIterations: Integer,
+                           noOfIterations: Int,
                            tabuSize: Int
                          )
 

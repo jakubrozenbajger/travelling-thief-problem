@@ -7,18 +7,19 @@ import scala.collection.mutable.ListBuffer
 
 class SimulatedAnnealing(params: SimulatedAnnealingParameters)(implicit context: Context) {
 
-
-  def run: List[Individual] = {
+  def run: (List[Individual], List[Individual]) = {
     var currentSolution: Individual = Individual.random
     var best: Individual = currentSolution.copy()
     val result = new ListBuffer[Individual]()
+    val others = new ListBuffer[Individual]()
     var currentTemperature: Double = params.startingTemperature
-    for (_ <- 0 until params.iterations) {
+    (0 until params.iterations) foreach { _ =>
       if (currentTemperature > params.stopTemperature) {
-        val r1: Int = context.nextIntInDims
-        val r2: Int = context.nextIntInDims
+        val ind1: Int = context.nextIntInDims
+        val ind2: Int = context.nextIntInDims
         val oldSolution = currentSolution
-        val swapped = oldSolution.swap(r1, r2)
+        val swapped = oldSolution.swap(ind1, ind2)
+        others += swapped
         if (swapped > best) {
           best = swapped
           currentSolution = swapped
@@ -29,9 +30,8 @@ class SimulatedAnnealing(params: SimulatedAnnealingParameters)(implicit context:
         result += currentSolution
         currentTemperature -= currentTemperature * params.coolingRate
       }
-
     }
-    result.toList
+    (result.toList, others.toList)
   }
 
 }
