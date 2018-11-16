@@ -1,7 +1,7 @@
 package cf.jrozen.mh.ttp.slover.genetic
 
 import cats.Show
-import cf.jrozen.mh.ttp.ScalaMainSA.{params, problemNames, runFor, solve}
+import cf.jrozen.mh.ttp.slover.sa.ScalaMainSA.{params, problemNames, runFor, solve}
 import cf.jrozen.mh.ttp.model.{Context, Population}
 import cf.jrozen.mh.ttp.slover.CsvFormat
 import cf.jrozen.mh.ttp.slover.sa.SimulatedAnnealingParameters

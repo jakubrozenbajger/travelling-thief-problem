@@ -1,14 +1,10 @@
-package cf.jrozen.mh.ttp
+package cf.jrozen.mh.ttp.slover.tabu
 
 import cats.Show
-import cats.effect.IO
 import cf.jrozen.mh.ttp.model.Context
 import cf.jrozen.mh.ttp.slover.CsvFormat
-import cf.jrozen.mh.ttp.slover.tabu.{TabuParameters, TabuSearch}
 import cf.jrozen.mh.ttp.utils.{Banner, ChartGenerator, Loader}
 import com.google.common.math.Stats
-
-import scala.concurrent.{ExecutionContext, Future}
 
 object ScalaMainTabu extends App {
 

@@ -1,9 +1,8 @@
-package cf.jrozen.mh.ttp
+package cf.jrozen.mh.ttp.slover.sa
 
 import cats.Show
 import cf.jrozen.mh.ttp.model.Context
 import cf.jrozen.mh.ttp.slover.CsvFormat
-import cf.jrozen.mh.ttp.slover.sa.{SimulatedAnnealing, SimulatedAnnealingParameters}
 import cf.jrozen.mh.ttp.utils.{Banner, ChartGenerator, Loader}
 import com.google.common.math.Stats
 
