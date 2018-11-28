@@ -64,3 +64,46 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
   }
 
 }
+
+object TabuSearch {
+
+  def findBest(implicit params: TabuParameters, context: Context): Individual = {
+    val tabuBase = TabuBase()
+    var bestSolution = Individual.random
+    var currentSolution = bestSolution.copy()
+    for (i <- 0 until params.noOfIterations) {
+      val bestNeighbour = getBestNeighbour(tabuBase, currentSolution, context)
+      if (bestNeighbour > bestSolution) {
+        bestSolution = bestNeighbour
+      }
+      currentSolution = bestNeighbour
+    }
+    bestSolution
+  }
+
+  val rnd = new Random()
+
+  def getBestNeighbour(tabuBase: TabuBase, solution: Individual, context: Context): Individual = {
+    val dim = context.problem.dimension
+    var best = solution.copy()
+    var first = true
+
+    val loglog = Math.log(Math.log(dim))
+
+    for {
+      i <- 1 until dim
+      j <- 2 until dim
+      if i != j
+      if loglog > rnd.nextInt(dim)
+    } {
+      val curr = best.swap(i, j)
+      if (tabuBase.canVisit(curr) && (first || curr > best)) {
+        best = curr
+        first = false
+      }
+    }
+    tabuBase.move(best)
+    best
+  }
+
+}

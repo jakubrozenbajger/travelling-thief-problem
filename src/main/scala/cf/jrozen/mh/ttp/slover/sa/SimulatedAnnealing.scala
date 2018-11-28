@@ -35,3 +35,33 @@ class SimulatedAnnealing(params: SimulatedAnnealingParameters)(implicit context:
   }
 
 }
+
+
+object SimulatedAnnealing {
+
+
+  def findBest(params: SimulatedAnnealingParameters)(implicit context: Context): Individual = {
+    var currentSolution: Individual = Individual.random
+    var best: Individual = currentSolution.copy()
+    var currentTemperature: Double = params.startingTemperature
+    (0 until params.iterations) foreach { _ =>
+      if (currentTemperature > params.stopTemperature) {
+        val ind1: Int = context.nextIntInDims
+        val ind2: Int = context.nextIntInDims
+        val oldSolution = currentSolution
+        val swapped = oldSolution.swap(ind1, ind2)
+        if (swapped > best) {
+          best = swapped
+          currentSolution = swapped
+        }
+        else if (Math.exp((swapped.value - best.value) / currentTemperature) < Math.random)
+          currentSolution = oldSolution
+
+        currentTemperature -= currentTemperature * params.coolingRate
+      }
+    }
+    best
+  }
+
+
+}
