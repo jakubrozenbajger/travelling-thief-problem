@@ -12,18 +12,21 @@ public class GeneticIndividual {
     private final int[] locations;
     private final Lazy<Double> value = Lazy.of(this::valueInit);
 
-    GeneticIndividual(Context context, GeneticParameters geneticParameters) {
-        this(context, geneticParameters, randomGenes(context));
+    private final MutationStrategy mutationStrategy;
+
+    GeneticIndividual(Context context, GeneticParameters geneticParameters, MutationStrategy mutationStrategy) {
+        this(context, geneticParameters, randomGenes(context), mutationStrategy);
     }
 
     public Double value() {
         return value.get();
     }
 
-    private GeneticIndividual(Context context, GeneticParameters geneticParameters, final int[] locations) {
+    private GeneticIndividual(Context context, GeneticParameters geneticParameters, final int[] locations, MutationStrategy mutationStrategy) {
         this.context = context;
         this.geneticParameters = geneticParameters;
         this.locations = locations;
+        this.mutationStrategy = mutationStrategy;
     }
 
     private double valueInit() {
@@ -31,16 +34,7 @@ public class GeneticIndividual {
     }
 
     GeneticIndividual mutate() {
-        final int[] cloned = locations.clone();
-        for (int currInd = 0; currInd < locations.length; currInd++) {
-            if (geneticParameters.nextMutate()) {
-                final int randomInd = context.nextIntInDims();
-                int tmp = cloned[currInd];
-                cloned[currInd] = cloned[randomInd];
-                cloned[randomInd] = tmp;
-            }
-        }
-        return new GeneticIndividual(context, geneticParameters, cloned);
+        return new GeneticIndividual(context, geneticParameters, mutationStrategy.mutate(locations), mutationStrategy);
     }
 
     GeneticIndividual crossover(GeneticIndividual that) {
@@ -53,7 +47,7 @@ public class GeneticIndividual {
     private GeneticIndividual crossoverOne(GeneticIndividual that) {
         final List<Integer> genes = List.ofAll(crossArrays(this.locations, that.locations));
         final List<Integer> fstNotUsed = List.range(0, context.problem().dimension()).removeAll(genes);
-        return new GeneticIndividual(context, geneticParameters, toArray(genes.distinct().appendAll(fstNotUsed)));
+        return new GeneticIndividual(context, geneticParameters, toArray(genes.distinct().appendAll(fstNotUsed)), mutationStrategy);
     }
 
     private static int[] randomGenes(Context context) {

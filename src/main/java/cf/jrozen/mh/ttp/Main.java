@@ -2,6 +2,7 @@ package cf.jrozen.mh.ttp;
 
 
 import cf.jrozen.mh.ttp.model.Context;
+import cf.jrozen.mh.ttp.model.GAMutationStrategy;
 import cf.jrozen.mh.ttp.model.Population;
 import cf.jrozen.mh.ttp.model.Problem;
 import cf.jrozen.mh.ttp.slover.genetic.GeneticParameters;
@@ -30,7 +31,7 @@ public class Main {
     private static List<Stats> solve(String problemName, GeneticParameters params) {
         final Problem trivial_1 = Loader.load(problemName);
         final Context context = new Context(trivial_1);
-        final List<Population> evolutionHistory = Population.initRandom(context, params).runEvolution();
+        final List<Population> evolutionHistory = Population.initRandom(context, params, new GAMutationStrategy(context, params)).runEvolution();
         return evolutionHistory.map(Population::stats);
     }
 

@@ -67,9 +67,9 @@ class TabuSearch()(implicit context: Context, params: TabuParameters) {
 
 object TabuSearch {
 
-  def findBest(implicit params: TabuParameters, context: Context): Individual = {
+  def findBest(indv: Array[Int])(implicit params: TabuParameters, context: Context): Array[Int] = {
     val tabuBase = TabuBase()
-    var bestSolution = Individual.random
+    var bestSolution = Individual(indv)
     var currentSolution = bestSolution.copy()
     for (i <- 0 until params.noOfIterations) {
       val bestNeighbour = getBestNeighbour(tabuBase, currentSolution, context)
@@ -78,7 +78,7 @@ object TabuSearch {
       }
       currentSolution = bestNeighbour
     }
-    bestSolution
+    bestSolution.locations
   }
 
   val rnd = new Random()

@@ -18,6 +18,8 @@ public class Population {
     private final Array<GeneticIndividual> population;
     private final Lazy<Stats> statsLazy = Lazy.of(this::calcStats);
 
+    private final MutationStrategy mutationStrategy;
+
     private Stats calcStats() {
         return Stats.of(population.map(GeneticIndividual::value));
     }
@@ -26,18 +28,19 @@ public class Population {
         return statsLazy.get();
     }
 
-    private Population(Context context, GeneticParameters geneticParameters, Array<GeneticIndividual> population) {
+    private Population(Context context, GeneticParameters geneticParameters, Array<GeneticIndividual> population, MutationStrategy mutationStrategy) {
         this.context = context;
         this.geneticParameters = geneticParameters;
         this.population = population;
+        this.mutationStrategy = mutationStrategy;
     }
 
-    public static Population initRandom(Context context, GeneticParameters geneticParameters) {
-        return new Population(context, geneticParameters, initRandomPopulation(context, geneticParameters));
+    public static Population initRandom(Context context, GeneticParameters geneticParameters, MutationStrategy mutationStrategy) {
+        return new Population(context, geneticParameters, initRandomPopulation(context, geneticParameters, mutationStrategy), mutationStrategy);
     }
 
-    private static Array<GeneticIndividual> initRandomPopulation(Context context, GeneticParameters geneticParameters) {
-        return Array.fill(geneticParameters.populationSize(), () -> new GeneticIndividual(context, geneticParameters));
+    private static Array<GeneticIndividual> initRandomPopulation(Context context, GeneticParameters geneticParameters, MutationStrategy mutationStrategy) {
+        return Array.fill(geneticParameters.populationSize(), () -> new GeneticIndividual(context, geneticParameters, mutationStrategy));
     }
 
     public List<Population> runEvolution() {
@@ -64,15 +67,15 @@ public class Population {
     }
 
     private Population mutate() {
-        return new Population(context, geneticParameters, population.map(GeneticIndividual::mutate));
+        return new Population(context, geneticParameters, population.map(GeneticIndividual::mutate), mutationStrategy);
     }
 
     private Population crossover() {
         return new Population(context, geneticParameters,
                 this.population.zipWith(this.population.shuffle(),
                         GeneticIndividual::crossover
-                ).toArray()
-        );
+                ).toArray(),
+                mutationStrategy);
     }
 
     private Population select() {
@@ -81,7 +84,7 @@ public class Population {
                         () -> pickRandomTournament()
                                 .sortBy(GeneticIndividual::value)
                                 .reverse()
-                                .head()));
+                                .head()), mutationStrategy);
     }
 
     private Array<GeneticIndividual> pickRandomTournament() {

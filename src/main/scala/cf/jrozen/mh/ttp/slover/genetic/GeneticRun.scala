@@ -2,24 +2,30 @@ package cf.jrozen.mh.ttp.slover.genetic
 
 import cats.Show
 import cf.jrozen.mh.ttp.slover.sa.ScalaMainSA.{params, problemNames, runFor, solve}
-import cf.jrozen.mh.ttp.model.{Context, Population}
+import cf.jrozen.mh.ttp.model.{Context, GAMutationStrategy, Population, SAMutationStrategy}
 import cf.jrozen.mh.ttp.slover.CsvFormat
 import cf.jrozen.mh.ttp.slover.sa.SimulatedAnnealingParameters
+import cf.jrozen.mh.ttp.slover.tabu.TabuParameters
 import cf.jrozen.mh.ttp.utils.{Banner, ChartGenerator, Loader}
 import com.google.common.math.Stats
+
+import scala.util.Random
 
 object GeneticRun extends App {
 
   System.out.println(Banner.title)
-  val problemNames = List("easy_1", "easy_4", "medium_0", "medium_1", "hard_0")
-  val params = GeneticParameters(130, 400, 5, 0.022, 0.119)
+  val params = GeneticParameters(populationSize = 130, noOfGenerations = 400, tournamentSize = 5, mutationProbability = 0.022, crossoverProbability = 0.119)
 
-//  val stats = solve(problemName, params)
-//  System.out.println("Last stats: " + stats.last)
-//  chart(params).show(stats)
-  private val result: Map[String, Stats] = problemNames.map(pn => runFor(pn, params)).toMap
-  println(result)
-  CsvFormat.format(result).foreach(println)
+  val problemName = "medium_1"
+  val stats = solve(problemName, params)
+  System.out.println("Last stats: " + stats.last)
+  chart(params).show(stats)
+
+
+//  val problemNames = List("easy_1", "easy_4", "medium_0", "medium_1", "hard_0")
+//  private val result: Map[String, Stats] = problemNames.map(pn => runFor(pn, params)).toMap
+//  println(result)
+//  CsvFormat.format(result).foreach(println)
 
 
 
@@ -27,9 +33,12 @@ object GeneticRun extends App {
 
 
   private def solve(problemName: String, params: GeneticParameters) = {
-    val context = new Context(Loader.load(problemName))
+    implicit val context = new Context(Loader.load(problemName))
+    implicit val saParameters = SimulatedAnnealingParameters(iterations = 5000, startingTemperature = 100.0, coolingRate = 0.01, stopTemperature = 0.0000001)
+    val rnd = new Random()
     import collection.convert.ImplicitConversionsToScala._
-    val evolutionHistory = Population.initRandom(context, params).runEvolution.asJava().toList
+    val evolutionHistory = Population.initRandom(context, params, new GAMutationStrategy(context, params)).runEvolution.asJava().toList
+//    val evolutionHistory = Population.initRandom(context, params, new SAMutationStrategy(new GAMutationStrategy(context, params), rnd.nextFloat() < 0.0010 )).runEvolution.asJava().toList
     evolutionHistory.map(_.stats)
   }
 

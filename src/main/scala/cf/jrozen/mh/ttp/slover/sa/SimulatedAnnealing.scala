@@ -40,8 +40,8 @@ class SimulatedAnnealing(params: SimulatedAnnealingParameters)(implicit context:
 object SimulatedAnnealing {
 
 
-  def findBest(params: SimulatedAnnealingParameters)(implicit context: Context): Individual = {
-    var currentSolution: Individual = Individual.random
+  def findBest(indv: Array[Int], params: SimulatedAnnealingParameters)(implicit context: Context): Array[Int] = {
+    var currentSolution: Individual = Individual(indv)
     var best: Individual = currentSolution.copy()
     var currentTemperature: Double = params.startingTemperature
     (0 until params.iterations) foreach { _ =>
@@ -60,7 +60,7 @@ object SimulatedAnnealing {
         currentTemperature -= currentTemperature * params.coolingRate
       }
     }
-    best
+    best.locations
   }
 
 
