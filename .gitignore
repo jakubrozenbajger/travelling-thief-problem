@@ -112,3 +112,6 @@ fabric.properties
 .idea/httpRequests
 
 .~lock*
+.idea
+*.iml
+*.ipr
