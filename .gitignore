@@ -112,7 +112,7 @@ fabric.properties
 .idea/httpRequests
 
 .~lock*
-.idea
+.idea/
 *.iml
 *.ipr
 *.ipr
