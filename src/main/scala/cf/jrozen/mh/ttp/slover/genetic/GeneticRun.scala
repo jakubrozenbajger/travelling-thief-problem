@@ -9,6 +9,7 @@ import cf.jrozen.mh.ttp.slover.tabu.TabuParameters
 import cf.jrozen.mh.ttp.utils.{Banner, ChartGenerator, Loader}
 import com.google.common.math.Stats
 
+import scala.ref.SoftReference
 import scala.util.Random
 
 object GeneticRun extends App {
@@ -33,15 +34,16 @@ object GeneticRun extends App {
 
 
   private def solve(problemName: String, params: GeneticParameters) = {
+    SoftReference
     implicit val context = new Context(Loader.load(problemName))
-    implicit val saParameters = SimulatedAnnealingParameters(iterations = 3000, startingTemperature = 200.0, coolingRate = 0.001, stopTemperature = 0.0000001)
+    implicit val saParameters = SimulatedAnnealingParameters(iterations = 5000, startingTemperature = 200.0, coolingRate = 0.001, stopTemperature = 0.0000001)
     implicit val tabuParameters = TabuParameters(noOfIterations = 800, tabuSize = 120)
     val rnd = new Random()
     import collection.convert.ImplicitConversionsToScala._
 //    val evolutionHistory = Population.initRandom(context, params, new GAMutationStrategy(context, params), EmptyFinish()).runEvolution.asJava().toList
 //    val evolutionHistory = Population.initRandom(context, params, new GAMutationStrategy(context, params), TabuFinish()).runEvolution.asJava().toList
 //    val evolutionHistory = Population.initRandom(context, params, new SAMutationStrategy(new GAMutationStrategy(context, params), rnd.nextFloat() < 0.0010 ), EmptyFinish()).runEvolution.asJava().toList
-    val evolutionHistory = Population.initRandom(context, params, new SAMutationStrategy(new GAMutationStrategy(context, params), rnd.nextFloat() < 0.0030 ), TabuFinish()).runEvolution.asJava().toList
+    val evolutionHistory = Population.initRandom(context, params, new SAMutationStrategy(new GAMutationStrategy(context, params), rnd.nextFloat() < 0.0070 ), TabuFinish()).runEvolution.asJava().toList
     evolutionHistory.map(_.stats)
   }
 
