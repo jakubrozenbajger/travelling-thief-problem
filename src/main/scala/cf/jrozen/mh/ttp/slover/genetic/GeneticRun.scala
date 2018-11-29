@@ -2,7 +2,7 @@ package cf.jrozen.mh.ttp.slover.genetic
 
 import cats.Show
 import cf.jrozen.mh.ttp.slover.sa.ScalaMainSA.{params, problemNames, runFor, solve}
-import cf.jrozen.mh.ttp.model.{Context, GAMutationStrategy, Population, SAMutationStrategy}
+import cf.jrozen.mh.ttp.model._
 import cf.jrozen.mh.ttp.slover.CsvFormat
 import cf.jrozen.mh.ttp.slover.sa.SimulatedAnnealingParameters
 import cf.jrozen.mh.ttp.slover.tabu.TabuParameters
@@ -34,11 +34,14 @@ object GeneticRun extends App {
 
   private def solve(problemName: String, params: GeneticParameters) = {
     implicit val context = new Context(Loader.load(problemName))
-    implicit val saParameters = SimulatedAnnealingParameters(iterations = 5000, startingTemperature = 100.0, coolingRate = 0.01, stopTemperature = 0.0000001)
+    implicit val saParameters = SimulatedAnnealingParameters(iterations = 3000, startingTemperature = 200.0, coolingRate = 0.001, stopTemperature = 0.0000001)
+    implicit val tabuParameters = TabuParameters(noOfIterations = 800, tabuSize = 120)
     val rnd = new Random()
     import collection.convert.ImplicitConversionsToScala._
-    val evolutionHistory = Population.initRandom(context, params, new GAMutationStrategy(context, params)).runEvolution.asJava().toList
-//    val evolutionHistory = Population.initRandom(context, params, new SAMutationStrategy(new GAMutationStrategy(context, params), rnd.nextFloat() < 0.0010 )).runEvolution.asJava().toList
+//    val evolutionHistory = Population.initRandom(context, params, new GAMutationStrategy(context, params), EmptyFinish()).runEvolution.asJava().toList
+//    val evolutionHistory = Population.initRandom(context, params, new GAMutationStrategy(context, params), TabuFinish()).runEvolution.asJava().toList
+//    val evolutionHistory = Population.initRandom(context, params, new SAMutationStrategy(new GAMutationStrategy(context, params), rnd.nextFloat() < 0.0010 ), EmptyFinish()).runEvolution.asJava().toList
+    val evolutionHistory = Population.initRandom(context, params, new SAMutationStrategy(new GAMutationStrategy(context, params), rnd.nextFloat() < 0.0030 ), TabuFinish()).runEvolution.asJava().toList
     evolutionHistory.map(_.stats)
   }
 

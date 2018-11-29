@@ -22,7 +22,7 @@ public class GeneticIndividual {
         return value.get();
     }
 
-    private GeneticIndividual(Context context, GeneticParameters geneticParameters, final int[] locations, MutationStrategy mutationStrategy) {
+    GeneticIndividual(Context context, GeneticParameters geneticParameters, final int[] locations, MutationStrategy mutationStrategy) {
         this.context = context;
         this.geneticParameters = geneticParameters;
         this.locations = locations;
@@ -64,5 +64,9 @@ public class GeneticIndividual {
 
     private static int[] toArray(List<Integer> list) {
         return Ints.toArray(list.asJava());
+    }
+
+    public int[] locations() {
+        return locations;
     }
 }

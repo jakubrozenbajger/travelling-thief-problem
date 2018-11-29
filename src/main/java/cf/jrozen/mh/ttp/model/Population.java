@@ -19,6 +19,7 @@ public class Population {
     private final Lazy<Stats> statsLazy = Lazy.of(this::calcStats);
 
     private final MutationStrategy mutationStrategy;
+    private final FinishingStrategy finishingStrategy;
 
     private Stats calcStats() {
         return Stats.of(population.map(GeneticIndividual::value));
@@ -28,15 +29,16 @@ public class Population {
         return statsLazy.get();
     }
 
-    private Population(Context context, GeneticParameters geneticParameters, Array<GeneticIndividual> population, MutationStrategy mutationStrategy) {
+    private Population(Context context, GeneticParameters geneticParameters, Array<GeneticIndividual> population, MutationStrategy mutationStrategy, FinishingStrategy finishingStrategy) {
         this.context = context;
         this.geneticParameters = geneticParameters;
         this.population = population;
         this.mutationStrategy = mutationStrategy;
+        this.finishingStrategy = finishingStrategy;
     }
 
-    public static Population initRandom(Context context, GeneticParameters geneticParameters, MutationStrategy mutationStrategy) {
-        return new Population(context, geneticParameters, initRandomPopulation(context, geneticParameters, mutationStrategy), mutationStrategy);
+    public static Population initRandom(Context context, GeneticParameters geneticParameters, MutationStrategy mutationStrategy, FinishingStrategy finishingStrategy) {
+        return new Population(context, geneticParameters, initRandomPopulation(context, geneticParameters, mutationStrategy), mutationStrategy, finishingStrategy);
     }
 
     private static Array<GeneticIndividual> initRandomPopulation(Context context, GeneticParameters geneticParameters, MutationStrategy mutationStrategy) {
@@ -44,7 +46,14 @@ public class Population {
     }
 
     public List<Population> runEvolution() {
-        return evolve(geneticParameters.noOfGenerations());
+        final List<Population> evolution = evolve(geneticParameters.noOfGenerations());
+        return evolution.last().population.maxBy(GeneticIndividual::value)
+                .map(GeneticIndividual::locations)
+                .map(finishingStrategy::finish)
+                .map(l -> new GeneticIndividual(context, geneticParameters, l, mutationStrategy))
+                .map(e -> evolution.append(new Population(context, geneticParameters, Array.of(e), mutationStrategy, finishingStrategy)))
+                .getOrElse(evolution);
+//        return evolution;
     }
 
     private List<Population> evolve(int times) {
@@ -67,7 +76,7 @@ public class Population {
     }
 
     private Population mutate() {
-        return new Population(context, geneticParameters, population.map(GeneticIndividual::mutate), mutationStrategy);
+        return new Population(context, geneticParameters, population.map(GeneticIndividual::mutate), mutationStrategy, finishingStrategy);
     }
 
     private Population crossover() {
@@ -75,7 +84,9 @@ public class Population {
                 this.population.zipWith(this.population.shuffle(),
                         GeneticIndividual::crossover
                 ).toArray(),
-                mutationStrategy);
+                mutationStrategy,
+                finishingStrategy
+        );
     }
 
     private Population select() {
@@ -84,7 +95,7 @@ public class Population {
                         () -> pickRandomTournament()
                                 .sortBy(GeneticIndividual::value)
                                 .reverse()
-                                .head()), mutationStrategy);
+                                .head()), mutationStrategy, finishingStrategy);
     }
 
     private Array<GeneticIndividual> pickRandomTournament() {

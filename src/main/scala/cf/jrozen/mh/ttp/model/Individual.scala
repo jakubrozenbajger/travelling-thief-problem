@@ -6,7 +6,7 @@ import cf.jrozen.mh.ttp.{GreedyKnapsackSolver, mutable}
 
 import scala.util.Random
 
-case class Individual(val locations: Array[Int])(implicit context: Context) extends Ordered[Individual] {
+case class Individual(locations: Array[Int])(implicit context: Context) extends Ordered[Individual] {
 
   //  def value: Double = valueInit
   def value: Double = valueCache.get
